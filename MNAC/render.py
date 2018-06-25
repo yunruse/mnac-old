@@ -9,7 +9,7 @@ FONT = 'arial.ttf'
 BACKGROUND = '#444444'
 
 if True:
-    BACKGROUND = '#36393E'
+    BACKGROUND = '#32363B'
     GRID = [0xcc, 0xdd, 0xee]
 
     NOUGHTS = np.array((0, -0x11, -0x22))

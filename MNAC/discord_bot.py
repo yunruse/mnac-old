@@ -22,6 +22,8 @@ PATH_LANGUAGES ='../config/languages.toml'
 PATH_CONFIG = '../config/servers.toml'
 PATH_CACHE = '../config/image_cache.toml'
 
+BOT_ICON = 'https://cdn.discordapp.com/attachments/443859304710144002/460862368621133834/mnac.png'
+
 
 # Chat prefix required in public channels
 PREFIX = 'mnac/'
@@ -93,9 +95,7 @@ async def respond(msg, chan, user, **kwargs):
     if isinstance(game, DiscordMNAC):
         if game.is_solo:
             prefix = ''
-            users = lang['noughts'], lang['crosses']
-            m_user = users[game.player-1]
-            m_oppo = users[2 - game.player]
+            m_user, m_oppo = game._namePlayers()
         else:
             m_oppo = mention(game.opponent)            
     
@@ -108,37 +108,8 @@ async def respond(msg, chan, user, **kwargs):
     
     await bot.send_message(chan, msg)
 
-
 class DiscordMNAC(MNAC):
-    # Serialisation to dict (Discord items store as IDs)
-    _NoneSerial = 'lastPlacedGrid lastPlacedCell'.split()
-    _directSerial = 'noMiddleStart player grid grids state'.split()
-    _idSerial = 'channel noughts crosses'.split()
-
-    def toSerial(self):
-        serial = {'kind': 'game'}
-        for i in self._NoneSerial:
-            serial[i] = getattr(self, i, None)
-        for i in self._directSerial:
-            serial[i] = getattr(self, i)
-        for i in self._idSerial:
-            serial[i] = getattr(self, i).id
-        return serial
-    
-    @classmethod
-    async def fromSerial(cls, config):
-        config.pop('kind')
-        game = cls(
-            channel=bot.get_channel(config.pop('channel')),
-            noughts=await bot.get_user_info(config.pop('noughts')),
-            crosses=await bot.get_user_info(config.pop('crosses')),
-        )
-        for i in cls._NoneSerial:
-            setattr(game, i, config.get(i, None))
-        for i in cls._directSerial:
-            setattr(game, i, config.get(i, None))
-        game.check()
-        return game
+    '''Handles serialisation, user confusing and message sending'''
     
     def __init__(self, channel, noughts, crosses, noMiddleStart=False):
         self.timeStarted = time.time()
@@ -148,47 +119,96 @@ class DiscordMNAC(MNAC):
         self.render = render.ImageRender(self, RENDER_FILE_SIZE)
         MNAC.__init__(self, noMiddleStart=noMiddleStart)
 
-    @property
-    def has_expired(self):
-        return time.time() - self.timeStarted > MAX_GAME_TIME
-    
-    async def show(self):
-        await bot.send_typing(self.channel)
-        if self.winner:
-            return await respond(
-                "result_" + ('draw' if self.winner == 3 else 'win'),
-                self.channel, self.noughts)
-        else:
-            game_hash = hash(self)
-            link = CACHE.get(str(game_hash))
-
-            # equal hash(game) <-> equal render
-            # Discord attachment links are cached, so we don't have
-            # to re-render and upload each game. Delete cache if
-            # you change the rendering engine, though.
-            if False:
-                await bot.send_message(self.channel, embed={'link': link})
-            else:
-                # render game
-                file_path = RENDER_FILE_PATH(self, game_hash)
-                self.render.draw().save(file_path)
-                image_sent = await bot.send_file(self.channel, file_path)
-
-                # remove local file, and save link to cache for future reference
-                os.remove(file_path)
-                link = image_sent.attachments[0]['url']
-                CACHE[str(game_hash)] = link
-                save_cache()
-
-            return await respond(self.state, self.channel, self.current_user)
+    def __repr__(self):
+        return '<Discord MNAC ({}, {})>'.format(self.noughts, self.crosses)
 
     current_user = property(lambda s: s.noughts if s.player == 1 else s.crosses)
     opponent = property(lambda s: s.noughts if s.player == 2 else s.crosses)
     users = property(lambda s: (s.noughts, s.crosses))
     is_solo = property(lambda s: s.noughts == s.crosses)
 
-    def __repr__(self):
-        return '<Discord MNAC ({}, {})>'.format(self.noughts, self.crosses)
+    @property
+    def has_expired(self):
+        return time.time() - self.timeStarted > MAX_GAME_TIME
+
+    def _namePlayers(self):
+        '''Return 'noughts' or 'crosses' in order (currentPlayer, otherPlayer)'''
+        lang, _ = config(self.channel)
+        users = lang['noughts'], lang['crosses']
+        return users[::-1] if self.player == 2 else users
+    
+    async def show(self):
+        await bot.send_typing(self.channel)
+        if self.winner:
+            code = "result_" + ('draw' if self.winner == 3 else 'win')
+            return await respond(code, self.channel, self.current_user)
+        else:            
+            embed = discord.Embed()
+            player, other = self._namePlayers()
+            lang, _ = config(self.channel)
+            status = lang[self.state].format(player=player, other=other)
+            embed.set_footer(text=status, icon_url=BOT_ICON)
+
+            # equal hash(game) <-> equal render
+            # An admin must specify a private channel for the bot
+            # to chuck all images into. This ensures the status
+            # is always returned as an embed, not an image,
+            # and means users can't just delete images.
+            game_hash = str(hash(self))
+            link = CACHE.get(game_hash)
+            
+            if link is None:
+                # render game and send to the cache channel
+                # Todo: globals? really? use OOP
+                global CACHE_CHANNEL
+                file_path = RENDER_FILE_PATH(self, game_hash)
+                self.render.draw().save(file_path)
+
+                if CACHE_CHANNEL is None:
+                    CCID = CACHE.get('channel')
+                    if CCID:
+                        CACHE_CHANNEL = bot.get_channel(CCID)
+                    else:
+                        return await respond('cache_not_found', self.channel, self.current_user)
+                
+                image_sent = await bot.send_file(CACHE_CHANNEL, file_path)
+                CACHE[game_hash] = link = image_sent.attachments[0]['url']
+                save_cache()
+                os.remove(file_path)
+
+            
+            #embed.set_thumbnail(url=link)
+            embed.set_image(url=link)
+            return await bot.send_message(self.channel, embed=embed)
+    
+    # Serialisation to dict (Discord items store as IDs)
+    
+    _NoneSerial = 'lastPlacedGrid lastPlacedCell'.split()
+    _directSerial = 'noMiddleStart player grid grids state'.split()
+    _idSerial = 'noughts crosses'.split()
+    
+    @classmethod
+    async def fromSerial(cls, channel, config):
+        game = cls(channel,
+            noughts=await bot.get_user_info(config.pop('noughts')),
+            crosses=await bot.get_user_info(config.pop('crosses')),
+        )
+        for i in cls._NoneSerial:
+            setattr(game, i, config.get(i, None))
+        for i in cls._directSerial:
+            setattr(game, i, config.get(i, None))
+        game.check()
+        return game
+        
+    def toSerial(self):
+        serial = {'kind': 'game'}
+        for i in self._NoneSerial:
+            serial[i] = getattr(self, i, None)
+        for i in self._directSerial:
+            serial[i] = getattr(self, i)
+        for i in self._idSerial:
+            serial[i] = getattr(self, i).id
+        return serial
 
 
 
@@ -242,10 +262,11 @@ for chan in CONFIG:
         CONFIG[chan]['state']['noughts'] = bot.get_user_info(state['noughts'])
 
 CACHE = _data_load(PATH_CACHE)
+CACHE_CHANNEL = None
 # {gameMapping(s): image_url}
 
 # getters and setters
-def save_server():
+def save_config():
     printf('Saving server config...')
     serial = {}
     # serialise config
@@ -282,7 +303,7 @@ def config(chan):
 
 
 
-COMMANDS = 'help tutorial status start stop play random lang'.split()
+COMMANDS = 'help tutorial status start stop play random lang cache'.split()
 MEMES = (
     ('donger', 'ᕦ(ຈل͜ຈ)ᕤ'),
     )
@@ -307,12 +328,12 @@ async def on_message(message):
     def set_game(new=None):
         if new != CONFIG[chan.id]['state']:
             CONFIG[chan.id]['state'] = new
-            save_server()
+            save_config()
         return new
 
     # deserialise game entries
     if isinstance(game, dict) and game['kind'] == 'game':
-        game = await DiscordMNAC.fromSerial(game)
+        game = await DiscordMNAC.fromSerial(chan, game)
         CONFIG[chan.id]['state'] = game
     
     if isinstance(game, DiscordMNAC):
@@ -353,6 +374,11 @@ async def on_message(message):
                 return await r(response)
         return
 
+    if args:
+        subcommand = args[0]
+    else:
+        subcommand = None
+
     if command in COMMANDS:
         printf('{:<20} {:<5} {:<10} : {}({})', chan.id, mode, user.name, command, ', '.join(args))
     else:
@@ -360,7 +386,13 @@ async def on_message(message):
 
     if command == 'help':
         # list off commands
-        await r('help' + '_start'*('start' in args))
+        doc = 'help'
+        
+        for sub in 'start play'.split():
+            if subcommand == sub:
+                doc += '_' + sub
+        
+        await r(doc)
 
     elif command == 'status':
         # give status of game / re-print game
@@ -371,12 +403,11 @@ async def on_message(message):
                 'solo' if chan.is_private else 'lobby' if mode == 'lobby' else 'empty'))
 
     elif command == 'lang':
-        if args:
-            lang = args.pop(0)
-            if lang in LANGUAGES:
-                CONFIG[chan.id]['language'] = lang
-                save_server()
-                return await r('language_changed')
+        lang = pop()
+        if lang in LANGUAGES:
+            CONFIG[chan.id]['language'] = lang
+            save_config()
+            return await r('language_changed')
 
         # print list of languages
         await r('language_help')
@@ -420,7 +451,7 @@ async def on_message(message):
             if game.winner:
                 set_game(None)
             else:
-                save_server()
+                save_config()
 
         if command == 'stop':
             set_game(None)
@@ -447,6 +478,32 @@ async def on_message(message):
                     continue
             else:
                 await r('play_unknown_error')
+
+    
+    else:
+        # Admin commands
+        adminID = CACHE.get('admin', None)
+        
+        if adminID is None:
+            # No admin - set to the current user
+            adminID = CACHE['admin'] = user.id
+        
+        elif user.id != adminID:
+            return
+        
+        if command == 'cache':
+            subcommand = pop()
+            if subcommand == 'here':
+                CACHE_CHANNEL = chan
+                CACHE['channel'] = chan.id
+                await r('admin_cache_here')
+                
+            elif subcommand == 'purge':
+                print('I should probably purge the cache')
+                await r('admin_cache_purged')
+        
+        save_cache()
+            
 
 with open(PATH_TOKEN, encoding='utf8') as f:
     TOKEN = f.read(-1)
