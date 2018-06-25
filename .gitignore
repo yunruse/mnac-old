@@ -109,3 +109,4 @@ config/image_cache.json
 config/servers.json
 config/image_cache.toml
 config/servers.toml
+config/config.toml

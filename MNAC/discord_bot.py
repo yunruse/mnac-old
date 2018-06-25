@@ -19,7 +19,8 @@ PATH_TOKEN = '../config/token.txt'
 
 # These can be .json or .toml
 PATH_LANGUAGES ='../config/languages.toml'
-PATH_CONFIG = '../config/servers.toml'
+PATH_SERVERS = '../config/servers.toml'
+PATH_CONFIG = '../config/config.toml'
 PATH_CACHE = '../config/image_cache.toml'
 
 BOT_ICON = 'https://cdn.discordapp.com/attachments/443859304710144002/460862368621133834/mnac.png'
@@ -146,10 +147,8 @@ class DiscordMNAC(MNAC):
             # and means users can't just delete images.
             global CACHE_CHANNEL
             if CACHE_CHANNEL is None:
-                CCID = CACHE.get('channel')
-                if CCID:
-                    CACHE_CHANNEL = bot.get_channel(str(CCID))
-                else:
+                CACHE_CHANNEL = bot.get_channel(str(CONFIG.get('cache_channel')))
+                if not CACHE_CHANNEL:
                     return await respond('cache_not_found', self.channel, self.current_user)
             
             embed = discord.Embed()
@@ -174,8 +173,7 @@ class DiscordMNAC(MNAC):
                 
                 message = await bot.send_file(CACHE_CHANNEL, file_path)
                 link = message.attachments[0]['url']
-                CACHE[game_hash] = messageID, imageID = int(message.id), int(link.split('/')[-2])
-                save_cache()
+                CACHE[game_hash] = [int(message.id), int(link.split('/')[-2])]
                 os.remove(file_path)
 
             
@@ -246,53 +244,31 @@ LANGUAGES = _data_load(PATH_LANGUAGES, required=True)
 # {lang_code(s): {response_id(s): translation}}
 
 CONFIG = _data_load(PATH_CONFIG)
+
+SERVERS = _data_load(PATH_SERVERS)
 # channel_id(s): {'language': lang_code, 'state': state}
 # where state is null or either:
-  # {'kind': 'lobby', 'noughts': str, 'time_started': int)
+  # {'kind': 'lobby', 'noughts': str, 'time_started': int, otherconfig...}
   # {'kind': 'game', ...}
 
-
-
 # deserialise lobbies
-# (games must be deserialised when the bot is loaded)
-for chan in CONFIG:
-    state = CONFIG[chan].get('state')
+# (actual games are deserialised when needed)
+for chan in SERVERS:
+    state = SERVERS[chan].get('state')
     if state is None:
-        CONFIG[chan]['state'] = None
+        SERVERS[chan]['state'] = None
     elif state['kind'] == 'lobby':
-        CONFIG[chan]['state']['noughts'] = bot.get_user_info(state['noughts'])
+        SERVERS[chan]['state']['noughts'] = bot.get_user_info(state['noughts'])
 
 CACHE = _data_load(PATH_CACHE)
 CACHE_CHANNEL = None
 # {gameMapping(s): image_url}
 
-# getters and setters
-def save_config():
-    printf('Saving server config...')
-    serial = {}
-    # serialise config
-    for chan in CONFIG:
-        state = CONFIG[chan]['state']
-        if isinstance(state, DiscordMNAC):
-            state = state.toSerial()
-        else:
-            state = copy.deepcopy(state)
-            if isinstance(state, dict) and state['kind'] == 'lobby':
-                state['noughts'] = state['noughts'].id
-        
-        serial[chan] = {'language': CONFIG[chan]['language'], 'state': state}
-            
-    _data_save(PATH_CONFIG, serial)
-
-def save_cache():
-    printf('Saving render cache...')
-    _data_save(PATH_CACHE, CACHE)
-
 CONF_DEFAULT = {'language': DEFAULT_LANGUAGE, 'state': None}
 def config(chan):
-    conf = CONFIG.get(chan.id)
+    conf = SERVERS.get(chan.id)
     if not conf:
-        CONFIG[chan.id] = conf = dict(CONF_DEFAULT)
+        SERVERS[chan.id] = conf = dict(CONF_DEFAULT)
         # don't save - the server hasn't interacted yet
     return LANGUAGES[conf['language']], conf['state']
 
@@ -327,15 +303,14 @@ async def on_message(message):
     mode = 'chat'
 
     def set_game(new=None):
-        if new != CONFIG[chan.id]['state']:
-            CONFIG[chan.id]['state'] = new
-            save_config()
+        if new != SERVERS[chan.id]['state']:
+            SERVERS[chan.id]['state'] = new
         return new
 
     # deserialise game entries
     if isinstance(game, dict) and game['kind'] == 'game':
         game = await DiscordMNAC.fromSerial(chan, game)
-        CONFIG[chan.id]['state'] = game
+        SERVERS[chan.id]['state'] = game
     
     if isinstance(game, DiscordMNAC):
         mode = 'game'
@@ -404,10 +379,8 @@ async def on_message(message):
                 'solo' if chan.is_private else 'lobby' if mode == 'lobby' else 'empty'))
 
     elif command == 'lang':
-        lang = pop()
-        if lang in LANGUAGES:
-            CONFIG[chan.id]['language'] = lang
-            save_config()
+        if subcommand in LANGUAGES:
+            SERVERS[chan.id]['language'] = subcommand
             return await r('language_changed')
 
         # print list of languages
@@ -441,18 +414,14 @@ async def on_message(message):
                      'time_started': now, 'noMiddleStart': noMiddleStart}
             set_game(lobby)
             await r('lobby_open', time_left=MAX_LOBBY_TIME)
-        
-        
 
-    elif mode == 'game' and user in game.users:
+    elif command in 'stop play random'.split() and mode == 'game' and user in game.users:
 
         async def play(direction):
             game.play(direction)
             await game.show()
             if game.winner:
                 set_game(None)
-            else:
-                save_config()
 
         if command == 'stop':
             set_game(None)
@@ -479,32 +448,44 @@ async def on_message(message):
                     continue
             else:
                 await r('play_unknown_error')
-
-    
-    else:
-        # Admin commands
-        adminID = CACHE.get('admin', None)
         
-        if adminID is None:
-            # No admin - set to the current user
-            adminID = CACHE['admin'] = int(user.id)
-        
-        elif int(user.id) != adminID:
+    elif command == 'cache':
+        global CACHE_CHANNEL
+        global CACHE
+        if 'admin' not in CONFIG:
+            CONFIG['admin'] = int(user.id)
+       
+        if int(user.id) != CONFIG.get('admin'):
             return
+
+        if subcommand == 'here':
+            CACHE_CHANNEL = chan
+            CONFIG['cache_channel'] = int(chan.id)
+            await r('cache_here')
         
-        if command == 'cache':
-            subcommand = pop()
-            if subcommand == 'here':
-                CACHE_CHANNEL = chan
-                CACHE['channel'] = int(chan.id)
-                await r('admin_cache_here')
-                
-            elif subcommand == 'purge':
-                print('I should probably purge the cache')
-                await r('admin_cache_purged')
-        
-        save_cache()
+        elif subcommand == 'purge':
+            for messageID, imageID in CACHE:
+                bot.delete_message(await bot.get_message(CACHE_CHANNEL, messageID))
+            CACHE = {}
+            await r('cache_purged')
+
+        printf('Saving config and cache to file...')
+
+        servers_serial = {}
+        for chan in SERVERS:
+            state = SERVERS[chan]['state']
+            if isinstance(state, DiscordMNAC):
+                state = state.toSerial()
+            else:
+                state = copy.deepcopy(state)
+                if isinstance(state, dict) and state['kind'] == 'lobby':
+                    state['noughts'] = state['noughts'].id
             
+            servers_serial[chan] = {'language': SERVERS[chan]['language'], 'state': state}
+    
+        _data_save(PATH_SERVERS, servers_serial)
+        _data_save(PATH_CACHE, CACHE)
+        _data_save(PATH_CONFIG, CONFIG)
 
 with open(PATH_TOKEN, encoding='utf8') as f:
     TOKEN = f.read(-1)
