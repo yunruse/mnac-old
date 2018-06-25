@@ -13,11 +13,11 @@ import render
 # Print log messages to console output
 LOG_TO_STDOUT = True
 # Path to log file or `None`
-PATH_LOG = './config/log.txt'
-PATH_LANGUAGES ='./config/languages.json'
-PATH_CONFIG = './config/servers.json'
-PATH_CACHE = './config/image_cache.json'
-PATH_TOKEN = './config/token.txt'
+PATH_TOKEN = '../config/token.txt'
+PATH_LANGUAGES ='../config/languages.json'
+PATH_LOG = '../config/log.txt'
+PATH_CONFIG = '../config/servers.json'
+PATH_CACHE = '../config/image_cache.json'
 
 
 # Chat prefix required in public channels
@@ -45,23 +45,6 @@ DEFAULT_LANGUAGE = 'en'
 # M E T A   N O U G H T S   A N D   C R O S S E S
 #
 # Thar be dragons below.
-
-# Todo:
-  # Rendering:
-    # fill in captured grid
-    # Colour themes?
-  # Core:
-    # Auto-send when only one sending option
-  # Languages to do:
-    # English
-    # English (Pirate)
-    # German
-    # Dutch
-    # Estonian
-    # Polish
-  # Bugs:
-    # Caching
-    # 'where do you want to send [yourself]'
     
     
 bot = discord.Client()
