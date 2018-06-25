@@ -107,3 +107,5 @@ config/token.txt
 config/log.txt
 config/image_cache.json
 config/servers.json
+config/image_cache.toml
+config/servers.toml

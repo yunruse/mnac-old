@@ -19,8 +19,8 @@ PATH_TOKEN = '../config/token.txt'
 
 # These can be .json or .toml
 PATH_LANGUAGES ='../config/languages.toml'
-PATH_CONFIG = '../config/servers.json'
-PATH_CACHE = '../config/image_cache.json'
+PATH_CONFIG = '../config/servers.toml'
+PATH_CACHE = '../config/image_cache.toml'
 
 
 # Chat prefix required in public channels
@@ -192,27 +192,33 @@ class DiscordMNAC(MNAC):
 
 
 
-def _dL(path, required=False):
-    if not path:
-        return {}
-    try:
-        with open(path, encoding='utf8') as f:
-            if path.endswith('.json'):
-                return json.load(f)
-            elif path.endswith('.toml'):
-                return toml.load(f)
-    except FileNotFoundError:
-        if required:
-            raise
-        else:
-            return dict()
+def _data_load(path, required=False):
+    if path:
+        try:
+            with open(path, encoding='utf8') as f:
+                if path.endswith('.json'):
+                    return json.load(f)
+                elif path.endswith('.toml'):
+                    return toml.load(f)
+        except FileNotFoundError:
+            if required:
+                raise
+    
+    return dict()
+
+def _data_save(path, data):
+    with open(path, 'w', encoding='utf8') as f:
+        if path.endswith('.json'):
+            json.dump(data, f)
+        elif path.endswith('.toml'):
+            toml.dump(data, f)
 
 printf('Loading configuration...')
 
-LANGUAGES = _dL(PATH_LANGUAGES, required=True)
+LANGUAGES = _data_load(PATH_LANGUAGES, required=True)
 # {lang_code(s): {response_id(s): translation}}
 
-CONFIG = _dL(PATH_CONFIG)
+CONFIG = _data_load(PATH_CONFIG)
 # channel_id(s): {'language': lang_code, 'state': state}
 # where state is null or either:
   # {'kind': 'lobby', 'noughts': str, 'time_started': int)
@@ -223,11 +229,11 @@ CONFIG = _dL(PATH_CONFIG)
 # deserialise lobbies
 # (games must be deserialised when the bot is loaded)
 for chan in CONFIG:
-    state = CONFIG[chan]['state']
+    state = CONFIG[chan].get('state')
     if isinstance(state, dict) and state['kind'] == 'lobby':
         CONFIG[chan]['state']['noughts'] = bot.get_user_info(state['noughts'])
 
-CACHE = _dL(PATH_CACHE)
+CACHE = _data_load(PATH_CACHE)
 # {gameMapping(s): image_url}
 
 # getters and setters
@@ -246,14 +252,11 @@ def save_server():
         
         serial[chan] = {'language': CONFIG[chan]['language'], 'state': state}
             
-    
-    with open(PATH_CONFIG, 'w', encoding='utf8') as f:
-        json.dump(serial, f)
+    _data_save(PATH_CONFIG, serial)
 
 def save_cache():
     printf('Saving render cache...')
-    with open(PATH_CACHE, 'w', encoding='utf8') as f:
-        json.dump(CACHE, f)
+    _data_save(PATH_CACHE, CACHE)
 
 CONF_DEFAULT = {'language': DEFAULT_LANGUAGE, 'state': None}
 def config(chan):
