@@ -154,7 +154,7 @@ class DiscordMNAC(MNAC):
                 self.channel, self.noughts)
         else:
             game_hash = hash(self)
-            link = CACHE.get(game_hash)
+            link = CACHE.get(str(game_hash))
 
             # equal hash(game) <-> equal render
             # Discord attachment links are cached, so we don't have
@@ -171,7 +171,7 @@ class DiscordMNAC(MNAC):
                 # remove local file, and save link to cache for future reference
                 os.remove(file_path)
                 link = image_sent.attachments[0]['url']
-                CACHE[game_hash] = link
+                CACHE[str(game_hash)] = link
                 save_cache()
 
             return await respond(self.state, self.channel, self.current_user)
@@ -230,7 +230,9 @@ CONFIG = _data_load(PATH_CONFIG)
 # (games must be deserialised when the bot is loaded)
 for chan in CONFIG:
     state = CONFIG[chan].get('state')
-    if isinstance(state, dict) and state['kind'] == 'lobby':
+    if state is None:
+        CONFIG[chan]['state'] = None
+    elif state['kind'] == 'lobby':
         CONFIG[chan]['state']['noughts'] = bot.get_user_info(state['noughts'])
 
 CACHE = _data_load(PATH_CACHE)
