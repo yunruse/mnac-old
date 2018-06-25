@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 
 config/token.txt
+config/log.txt
+config/image_cache.json
+config/servers.json
