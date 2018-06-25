@@ -200,8 +200,10 @@ class MNAC:
                 return
 
     def __hash__(self):
-        cells = tuple(tuple(grid) for grid in self.grids)
-        return hash((self.state, cells))
+        return hash((
+            {'begin': 1, 'inner': 2, 'outer': 3}.get(self.state),
+            tuple(tuple(grid) for grid in self.grids)
+            ))
 
 def _test(n=1000, **args):
     
