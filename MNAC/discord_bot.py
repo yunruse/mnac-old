@@ -6,6 +6,7 @@ import time
 import os
 
 import discord
+import toml
 
 from mnac import MNAC, MoveError, getIndex
 import render
@@ -13,9 +14,11 @@ import render
 # Print log messages to console output
 LOG_TO_STDOUT = True
 # Path to log file or `None`
-PATH_TOKEN = '../config/token.txt'
-PATH_LANGUAGES ='../config/languages.json'
 PATH_LOG = '../config/log.txt'
+PATH_TOKEN = '../config/token.txt'
+
+# These can be .json or .toml
+PATH_LANGUAGES ='../config/languages.toml'
 PATH_CONFIG = '../config/servers.json'
 PATH_CACHE = '../config/image_cache.json'
 
@@ -45,8 +48,8 @@ DEFAULT_LANGUAGE = 'en'
 # M E T A   N O U G H T S   A N D   C R O S S E S
 #
 # Thar be dragons below.
-    
-    
+
+
 bot = discord.Client()
 
 def printf(message, *args, **kwargs):
@@ -189,15 +192,24 @@ class DiscordMNAC(MNAC):
 
 
 
-def _dL(path):
+def _dL(path, required=False):
     if not path:
         return {}
-    with open(path, encoding='utf8') as f:
-        return json.load(f)
+    try:
+        with open(path, encoding='utf8') as f:
+            if path.endswith('.json'):
+                return json.load(f)
+            elif path.endswith('.toml'):
+                return toml.load(f)
+    except FileNotFoundError:
+        if required:
+            raise
+        else:
+            return dict()
 
 printf('Loading configuration...')
 
-LANGUAGES = _dL(PATH_LANGUAGES)
+LANGUAGES = _dL(PATH_LANGUAGES, required=True)
 # {lang_code(s): {response_id(s): translation}}
 
 CONFIG = _dL(PATH_CONFIG)
