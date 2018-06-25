@@ -212,7 +212,6 @@ class UIMNAC(tk.Tk):
         self.isFirstMove = True
         self.showHelp = False
         self.error = ''
-        self.lastPlaced = (None, None)
         
         self.game = MNAC(noMiddleStart=True)
         self.game.onPlace = self.onPlace
@@ -305,9 +304,6 @@ class UIMNAC(tk.Tk):
         except MoveError as e:
             self.error = e.args[0]
         self.redraw()
-
-    def onPlace(self, grid, cell):
-        self.lastPlaced = (grid, cell)
 
     def test_turn(self, *event):
         '''debug: play random moves'''

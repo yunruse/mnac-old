@@ -89,7 +89,8 @@ class MNAC:
     def __init__(self, startGrid=None, noMiddleStart=False):
         self.noMiddleStart = noMiddleStart
 
-        self.lastPlaced = (None, None)
+        self.lastPlacedGrid = None
+        self.lastPlacedCell = None
         self.gridStatus = [0] * 9
         self.grids = [[0] * 9 for i in range(9)]
         self.player = 1
@@ -150,7 +151,8 @@ class MNAC:
             if self.grids[self.grid][index] != 0:
                 raise MoveError(11)
             self.grids[self.grid][index] = self.player
-            self.lastPlaced = (self.grid, index)
+            self.lastPlacedGrid = self.grid
+            self.lastPlacedCell = index
             if callable(self.onPlace):
                 self.onPlace(self.grid, index)
             self.check()

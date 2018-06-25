@@ -121,7 +121,7 @@ class Render:
                 cellStatus = game.grids[i][j]
                 xy = np.array((j % 3, j // 3))
                 celltl = gridtl + xy * cell
-                wasLast = game.lastPlaced == (i, j)
+                wasLast = (game.lastPlacedGrid, game.lastPlacedCell) == (i, j)
                 if cellStatus == 1:
                     color = TELEMAIN if wasLast else CROSSMAIN
                     top_left = celltl + cell / 18

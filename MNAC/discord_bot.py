@@ -108,13 +108,17 @@ async def respond(msg, chan, user, **kwargs):
     
     await bot.send_message(chan, msg)
 
+
 class DiscordMNAC(MNAC):
     # Serialisation to dict (Discord items store as IDs)
-    _directSerial = 'noMiddleStart player grid grids state lastPlaced'.split()
+    _NoneSerial = 'lastPlacedGrid lastPlacedCell'.split()
+    _directSerial = 'noMiddleStart player grid grids state'.split()
     _idSerial = 'channel noughts crosses'.split()
 
     def toSerial(self):
         serial = {'kind': 'game'}
+        for i in self._NoneSerial:
+            serial[i] = getattr(self, i, None)
         for i in self._directSerial:
             serial[i] = getattr(self, i)
         for i in self._idSerial:
@@ -129,8 +133,10 @@ class DiscordMNAC(MNAC):
             noughts=await bot.get_user_info(config.pop('noughts')),
             crosses=await bot.get_user_info(config.pop('crosses')),
         )
+        for i in cls._NoneSerial:
+            setattr(game, i, config.get(i, None))
         for i in cls._directSerial:
-            setattr(game, i, config[i])
+            setattr(game, i, config.get(i, None))
         game.check()
         return game
     
