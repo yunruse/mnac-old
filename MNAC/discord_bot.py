@@ -34,11 +34,8 @@ MAX_GAME_TIME = 60 * 30
 
 # Width (= height) of image to render
 RENDER_FILE_SIZE = 450
-# f(game, game_hash) to determine path and file type.
-def RENDER_FILE_PATH(game, game_hash):
-    return '{}mnac_{}.png'.format(
-        os.path.expandvars('%temp%/' if os.name == 'nt' else '$tmpdir/'),
-        game_hash)
+RENDER_FILE_NAME = 'mnac_{}.png'
+RENDER_TEMP_DIRECTORY = os.path.expandvars('%temp%/' if os.name == 'nt' else '$tmpdir/')
 
 DEFAULT_LANGUAGE = 'en'
 
@@ -50,7 +47,6 @@ DEFAULT_LANGUAGE = 'en'
 # M E T A   N O U G H T S   A N D   C R O S S E S
 #
 # Thar be dragons below.
-
 
 bot = discord.Client()
 
@@ -142,7 +138,20 @@ class DiscordMNAC(MNAC):
         if self.winner:
             code = "result_" + ('draw' if self.winner == 3 else 'win')
             return await respond(code, self.channel, self.current_user)
-        else:            
+        else:
+            # Todo: globals? really? use OOP
+            # An admin must specify a private channel for the bot
+            # to chuck all images into. This ensures the status
+            # is always returned as an embed, not an image,
+            # and means users can't just delete images.
+            global CACHE_CHANNEL
+            if CACHE_CHANNEL is None:
+                CCID = CACHE.get('channel')
+                if CCID:
+                    CACHE_CHANNEL = bot.get_channel(str(CCID))
+                else:
+                    return await respond('cache_not_found', self.channel, self.current_user)
+            
             embed = discord.Embed()
             player, other = self._namePlayers()
             lang, _ = config(self.channel)
@@ -150,34 +159,26 @@ class DiscordMNAC(MNAC):
             embed.set_footer(text=status, icon_url=BOT_ICON)
 
             # equal hash(game) <-> equal render
-            # An admin must specify a private channel for the bot
-            # to chuck all images into. This ensures the status
-            # is always returned as an embed, not an image,
-            # and means users can't just delete images.
             game_hash = str(hash(self))
-            link = CACHE.get(game_hash)
             
-            if link is None:
+            # messageID, imageID
+            imageIDs = CACHE.get(game_hash)
+            
+            if imageIDs:
+                link = 'https://cdn.discordapp.com/attachments/{}/{}/mnac_{}.png'.format(
+                    CACHE_CHANNEL.id, imageIDs[1], game_hash)
+            else:
                 # render game and send to the cache channel
-                # Todo: globals? really? use OOP
-                global CACHE_CHANNEL
-                file_path = RENDER_FILE_PATH(self, game_hash)
+                file_path = RENDER_TEMP_DIRECTORY + RENDER_FILE_NAME.format(game_hash)
                 self.render.draw().save(file_path)
-
-                if CACHE_CHANNEL is None:
-                    CCID = CACHE.get('channel')
-                    if CCID:
-                        CACHE_CHANNEL = bot.get_channel(CCID)
-                    else:
-                        return await respond('cache_not_found', self.channel, self.current_user)
                 
-                image_sent = await bot.send_file(CACHE_CHANNEL, file_path)
-                CACHE[game_hash] = link = image_sent.attachments[0]['url']
+                message = await bot.send_file(CACHE_CHANNEL, file_path)
+                link = message.attachments[0]['url']
+                CACHE[game_hash] = messageID, imageID = int(message.id), int(link.split('/')[-2])
                 save_cache()
                 os.remove(file_path)
 
             
-            #embed.set_thumbnail(url=link)
             embed.set_image(url=link)
             return await bot.send_message(self.channel, embed=embed)
     
@@ -486,16 +487,16 @@ async def on_message(message):
         
         if adminID is None:
             # No admin - set to the current user
-            adminID = CACHE['admin'] = user.id
+            adminID = CACHE['admin'] = int(user.id)
         
-        elif user.id != adminID:
+        elif int(user.id) != adminID:
             return
         
         if command == 'cache':
             subcommand = pop()
             if subcommand == 'here':
                 CACHE_CHANNEL = chan
-                CACHE['channel'] = chan.id
+                CACHE['channel'] = int(chan.id)
                 await r('admin_cache_here')
                 
             elif subcommand == 'purge':
