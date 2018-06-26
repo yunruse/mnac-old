@@ -1,0 +1,8 @@
+default_language = "en"
+crosses_icon = "https://cdn.discordapp.com/attachments/460942940374695947/460942998503555083/crosses.png"
+noughts_icon = "https://cdn.discordapp.com/attachments/460942940374695947/460943013351260170/noughts.png"
+prefix = "mnac/"
+max_lobby_time = 10
+max_game_time = 1800
+render_file_size = 450
+render_file_format = "png"
