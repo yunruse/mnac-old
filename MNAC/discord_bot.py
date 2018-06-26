@@ -470,14 +470,18 @@ async def on_message(message):
         _data_save(PATH_SERVERS, servers_serial)
         _data_save(PATH_CONFIG, CONFIG)
 
+
 with open(PATH_TOKEN, encoding='utf8') as f:
     TOKEN = f.read(-1)
 
-# https://discordpy.readthedocs.io/en/latest/api.html#message
-try:
+if __name__ == '__main__':
     printf('Bot spinning up...')
-    bot.run(TOKEN)
-except Exception as e:
-    printf('{}: {}', type(e).__name__, ' '.join(map(str,e.args)))
+    try:
+        bot.run(TOKEN)
+    except Exception as e:
+        printf('Exception {}: {}', type(e).__name__, ' '.join(map(str,e.args)))
+    
     printf('Bot turning off...')
-    input()
+    _data_save(PATH_CACHE, CACHE)
+    _data_save(PATH_SERVERS, servers_serial)
+    _data_save(PATH_CONFIG, CONFIG)
