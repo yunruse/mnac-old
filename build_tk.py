@@ -1,6 +1,8 @@
 import os
 import sys
 from cx_Freeze import setup, Executable
+sys.argv.append('build')
+
 
 PY_PATH = r'C:\Program Files (x86)\Python36-32'
 os.environ['TCL_LIBRARY'] = PY_PATH + r'\tcl\tcl8.6'
