@@ -56,13 +56,6 @@ def _data_load(path, required=False):
     
     return dict()
 
-def _data_save(path, data):
-    with open(path, 'w', encoding='utf8') as f:
-        if path.endswith('.json'):
-            json.dump(data, f)
-        elif path.endswith('.toml'):
-            toml.dump(data, f)
-
 printf('Loading configuration...')
 
 LANGUAGES = _data_load(PATH_LANGUAGES, required=True)
@@ -106,6 +99,31 @@ def config(chan):
     return LANGUAGES[conf['language']], conf['state']
 
 
+def _data_save(path, data):
+    with open(path, 'w', encoding='utf8') as f:
+        if path.endswith('.json'):
+            json.dump(data, f)
+        elif path.endswith('.toml'):
+            toml.dump(data, f)
+            
+def save_data():
+    printf('Saving config and cache to file...')
+
+    servers_serial = {}
+    for chan in SERVERS:
+        state = SERVERS[chan]['state']
+        if isinstance(state, DiscordMNAC):
+            state = state.toSerial()
+        else:
+            state = copy.deepcopy(state)
+            if isinstance(state, dict) and state['kind'] == 'lobby':
+                state['noughts'] = state['noughts'].id
+        
+        servers_serial[chan] = {'language': SERVERS[chan]['language'], 'state': state}
+        
+    _data_save(PATH_CACHE, CACHE)
+    _data_save(PATH_CONFIG, CONFIG)
+    _data_save(PATH_SERVERS, servers_serial)
 
 
 #
@@ -458,25 +476,9 @@ async def on_message(message):
             await r('cache_purged')
         
         else:
-            _data_save(PATH_CACHE, CACHE)
             await r('cache_saved')
 
-        printf('Saving config and cache to file...')
-
-        servers_serial = {}
-        for chan in SERVERS:
-            state = SERVERS[chan]['state']
-            if isinstance(state, DiscordMNAC):
-                state = state.toSerial()
-            else:
-                state = copy.deepcopy(state)
-                if isinstance(state, dict) and state['kind'] == 'lobby':
-                    state['noughts'] = state['noughts'].id
-            
-            servers_serial[chan] = {'language': SERVERS[chan]['language'], 'state': state}
-    
-        _data_save(PATH_SERVERS, servers_serial)
-        _data_save(PATH_CONFIG, CONFIG)
+        save_data()
 
 
 with open(PATH_TOKEN, encoding='utf8') as f:
@@ -490,6 +492,4 @@ if __name__ == '__main__':
         printf('Exception {}: {}', type(e).__name__, ' '.join(map(str,e.args)))
     
     printf('Bot turning off...')
-    _data_save(PATH_CACHE, CACHE)
-    _data_save(PATH_SERVERS, servers_serial)
-    _data_save(PATH_CONFIG, CONFIG)
+    save_data()
