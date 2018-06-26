@@ -56,6 +56,7 @@ help_play = "You can play in grid or cell N by doing either [>play N<] or just `
 cache_here = "Okay, >user<, I'll dump cache here. Don't delete messages or it will result in errors - instead run [>cache purge<] to delete them all."
 cache_purged = "Okay >user<, deleted all cache."
 cache_not_found = "CACHE CHANNEL NOT FOUND! There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
+cache_saved = "Okay >user<, saved settings and cache to file."
 
 
 

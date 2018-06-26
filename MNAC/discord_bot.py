@@ -442,6 +442,9 @@ async def on_message(message):
                 bot.delete_message(await bot.get_message(CACHE_CHANNEL, messageID))
             CACHE = {}
             await r('cache_purged')
+        
+        else:
+            await r('cache_saved')
 
         printf('Saving config and cache to file...')
 
