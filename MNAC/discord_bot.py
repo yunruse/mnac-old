@@ -438,12 +438,17 @@ async def on_message(message):
             await r('cache_here')
         
         elif subcommand == 'purge':
-            for messageID, imageID in CACHE:
-                bot.delete_message(await bot.get_message(CACHE_CHANNEL, messageID))
-            CACHE = {}
+            for h in CACHE:
+                messageID, imageID = CACHE[h]
+                message = await bot.get_message(CACHE_CHANNEL, str(messageID))
+                if message:
+                    bot.delete_message(message)
+            with open(PATH_CACHE, 'w') as f:
+                pass # clears cache file
             await r('cache_purged')
         
         else:
+            _data_save(PATH_CACHE, CACHE)
             await r('cache_saved')
 
         printf('Saving config and cache to file...')
@@ -461,7 +466,6 @@ async def on_message(message):
             servers_serial[chan] = {'language': SERVERS[chan]['language'], 'state': state}
     
         _data_save(PATH_SERVERS, servers_serial)
-        _data_save(PATH_CACHE, CACHE)
         _data_save(PATH_CONFIG, CONFIG)
 
 with open(PATH_TOKEN, encoding='utf8') as f:
