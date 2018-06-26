@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import datetime
 import json
@@ -125,6 +126,11 @@ def save_data():
     _data_save(PATH_CONFIG, CONFIG)
     _data_save(PATH_SERVERS, servers_serial)
 
+async def save_clock():
+    interval = CONFIG['save_interval']
+    while True:
+        await asyncio.sleep(interval)
+        save_data()
 
 #
 # %% Bot i/o shenanigans
@@ -486,6 +492,7 @@ with open(PATH_TOKEN, encoding='utf8') as f:
 
 if __name__ == '__main__':
     printf('Bot spinning up...')
+    asyncio.async(save_clock())
     try:
         bot.run(TOKEN)
     except Exception as e:
