@@ -14,6 +14,7 @@ import random
 import tkinter as tk
 import numpy as np
 
+import mnac
 from mnac import MoveError, MNAC, numpad
 import render
 
@@ -213,7 +214,6 @@ class UIMNAC(tk.Tk):
         self.error = ''
         
         self.game = MNAC(noMiddleStart=True)
-        self.game.onPlace = self.onPlace
         self.redraw()
     
     keyboardMayPlay = property(lambda s: not s.showHelp and (
@@ -223,6 +223,7 @@ class UIMNAC(tk.Tk):
         s._keyboardPlayer is None or s._keyboardPlayer != s.game.player))
      
     def changePlayer(self, *event):
+        '''Called on ctrl-P or clicking the player icon.'''
         k = self._keyboardPlayer
         if k is None:
             self._keyboardPlayer = 1
@@ -254,7 +255,7 @@ class UIMNAC(tk.Tk):
     
     def onClick(self, event):
         w, h, s, tl, header_height = self.coordinate()
-        x = (event.x - tl[0]) / (s * 9)
+        x = (event.x - tl[0]) * 9 / s
         
         if (0 < event.y < header_height) and (0 < x < 9):
             # status bar click
@@ -301,7 +302,7 @@ class UIMNAC(tk.Tk):
         try:
             self.game.play(index)
         except MoveError as e:
-            self.error = e.args[0]
+            self.error = mnac.ERRORS[e.args[0]]
         self.redraw()
 
     def test_turn(self, *event):
