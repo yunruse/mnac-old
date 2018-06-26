@@ -2,7 +2,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-from mnac import MNAC, numpad
+import mnac
 
 FONT = 'arial.ttf'
 
@@ -72,7 +72,7 @@ CROSS = np.array([
 
 class Render:
     def __init__(self, game, size=450):
-        if not isinstance(game, MNAC):
+        if not isinstance(game, mnac.MNAC):
             raise TypeError('Game must be MNAC or subclass')
         self.game = game
         self.size = size
@@ -139,7 +139,7 @@ class Render:
                     canTeleport = (i == j or game.gridStatus[j] != 0)
                     self.text(
                         celltl + cell/2, isLarge=False,
-                        size=int(cell * 2/3), text=str(numpad(j + 1)),
+                        size=int(cell * 2/3), text=str(mnac.numpad(j + 1)),
                         fill=TELEMAIN if canTeleport else GRAYDARK)
             
             # %% grid markers - nought, cross
@@ -172,7 +172,7 @@ class Render:
                 if color:
                     self.text(
                         gridtl + cell * 6/9, isLarge=True,
-                        text=str(numpad(i+1)), size=int(cell * 2),
+                        text=str(mnac.numpad(i+1)), size=int(cell * 2),
                         fill=color)
 
         # corners, with x, y and reversing of corner coords
@@ -255,7 +255,7 @@ class ImageRender(Render):
 if __name__ == '__main__':
     import random
     import timeit
-    game = MNAC()
+    game = mnac.MNAC()
     plays = random.randrange(3, 40)
     plays = 50
     game.stressTest(plays)

@@ -15,7 +15,6 @@ import tkinter as tk
 import numpy as np
 
 import mnac
-from mnac import MoveError, MNAC, numpad
 import render
 
 TITLE = 'TkMNAC v1.3dev / yunru.se'
@@ -213,7 +212,7 @@ class UIMNAC(tk.Tk):
         self.showHelp = False
         self.error = ''
         
-        self.game = MNAC(noMiddleStart=True)
+        self.game = mnac.MNAC(noMiddleStart=True)
         self.redraw()
     
     keyboardMayPlay = property(lambda s: not s.showHelp and (
@@ -293,7 +292,7 @@ class UIMNAC(tk.Tk):
             return self.restart()
         
         if self.keyboardMayPlay:
-            self.play(numpad(index))
+            self.play(mnac.numpad(index))
 
     def play(self, index):
         if self.game.winner:
@@ -301,7 +300,7 @@ class UIMNAC(tk.Tk):
         self.error = ''
         try:
             self.game.play(index)
-        except MoveError as e:
+        except mnac.MoveError as e:
             self.error = mnac.ERRORS[e.args[0]]
         self.redraw()
 
@@ -313,7 +312,7 @@ class UIMNAC(tk.Tk):
             try:
                 self.game.play(i + 1)
                 break
-            except MoveError:
+            except mnac.MoveError:
                 continue
 
         self.render.draw()
@@ -324,4 +323,4 @@ class UIMNAC(tk.Tk):
 
 if __name__ == '__main__':
     self = UIMNAC()
-    #self.mainloop()
+    self.mainloop()

@@ -7,7 +7,7 @@ import os
 import re
 import sys
 
-from mnac import MNAC, MoveError, numpad, DIRECTIONS, getIndex
+import mnac
 
 COLOURS = {
     # for more: man console_codes [under ECMA-48 Set Graphics Rendition]
@@ -30,7 +30,7 @@ INFO = colourify('green')
 ERROR = colourify('red')
 NORMAL = colourify()
 
-class AsciiMNAC(MNAC):
+class AsciiMNAC(mnac.MNAC):
     def _grid(self, index, c=False):
         normal = NORMAL if c else ''
         noughts = NOUGHTS if c else ''
@@ -47,7 +47,7 @@ class AsciiMNAC(MNAC):
             for n, cell in enumerate(self.grids[index])]
         selector = (
             '   ' if self.noMiddleStart and self.state == 'begin' and index == 4 else
-            normal + ('[{}]' if self.grid == index else ' {} ').format(numpad(index + 1)))
+            normal + ('[{}]' if self.grid == index else ' {} ').format(mnac.numpad(index + 1)))
         print(symbols)
         return [''.join(symbols[0:3]), ''.join(symbols[4:7]), ''.join(symbols[6:9]), selector]
 
@@ -96,7 +96,7 @@ class AsciiMNAC(MNAC):
             
             prompt = ('{}{}{}: {}... > '.format(
                 NOUGHTS + 'Noughts' if self.player == 1 else CROSSES + 'Crosses', NORMAL,
-                ' in {} grid'.format(DIRECTIONS[self.grid][1]) if self.grid is not None else '',
+                ' in {} grid'.format(mnac.DIRECTIONS[self.grid][1]) if self.grid is not None else '',
                 self.action))
 
             inp = input(prompt).lower().strip().replace(' ', '').replace('-', '')
@@ -105,14 +105,14 @@ class AsciiMNAC(MNAC):
             elif not inp:
                 continue
             
-            index = getIndex(inp)
+            index = mnac.getIndex(inp)
             if index is None:
                 self._last_error = 'Invalid argument {!r}'.format(inp)
                 continue
             try:
                 print(index)
                 self.play(index)
-            except MoveError as e:
+            except mnac.MoveError as e:
                 self._last_error = e.args[0]
                 continue
             error = ''

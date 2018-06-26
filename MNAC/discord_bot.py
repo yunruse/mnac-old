@@ -8,7 +8,7 @@ import os
 import discord
 import toml
 
-from mnac import MNAC, MoveError, getIndex
+import mnac
 import render
 
 # Print log messages to console output
@@ -177,7 +177,7 @@ RENDER_PATH = '%smnac_{}.%s' % (
     os.path.expandvars('%temp%/' if os.name == 'nt' else '$tmpdir/'),
     CONFIG['render_file_format'])
 
-class DiscordMNAC(MNAC):
+class DiscordMNAC(mnac.MNAC):
     '''Handles serialisation, user confusing and message sending'''
     
     def __init__(self, channel, noughts, crosses, noMiddleStart=False):
@@ -186,7 +186,7 @@ class DiscordMNAC(MNAC):
         self.noughts = noughts
         self.crosses = crosses
         self.render = render.ImageRender(self, CONFIG['render_file_size'])
-        MNAC.__init__(self, noMiddleStart=noMiddleStart)
+        mnac.MNAC.__init__(self, noMiddleStart=noMiddleStart)
 
     def __repr__(self):
         return '<Discord MNAC ({}, {})>'.format(self.noughts, self.crosses)
@@ -431,7 +431,7 @@ async def on_message(message):
 
         elif command == 'play':
             if args:
-                direction = getIndex(args.pop(0))
+                direction = mnac.getIndex(args.pop(0))
                 if isinstance(direction, int):
                     await play(direction + 1)
                 else:
@@ -446,7 +446,7 @@ async def on_message(message):
                 try:
                     await play(i)
                     break
-                except MoveError:
+                except mnac.MoveError:
                     continue
             else:
                 await r('play_unknown_error')
