@@ -15,15 +15,13 @@ Meta Noughts and Crosses (aka [Ultimate Tic-Tac-Toe](wiki)) is a tactical twist 
 
 ## Installation
 
-First, [download] and extract.
-
-If you just want the UI, grab the dependencies required:
+First, [download] and extract. If you just want the UI, grab the dependencies required in a terminal of your choice:
 
 `pip install numpy Pillow`
 
 Then run `terminal.py` or `tk.py` for the terminal or UI versions of the game.
 
-If you want the Discord bot, grab the dependencies:
+If you want the Discord bot, you need a lil more:
 
 `pip install numpy Pillow discord.py toml`
 
@@ -31,9 +29,11 @@ Then, simply:
 
 1. [Create a Discord bot](API), and place the token inside of `config/tokens.txt`.
 2. Rename `config_sample.toml` to `config.toml`, and modify settings as you please.
-3. To save time and processing power, the bot caches the URL of each render of the game. Create a private channel, disable notifications on it, and run `mnac/cache here` - this is where all images will be sent.
+3. Start the bot, and invite it to your server(s).
+4. To save time and processing power, the bot caches the URL of each render of the game, and stores them in a channel to avoid users deleting the cache. Create a private channel, disable notifications on it, and register the admin and cache channel by running `mnac/cache here`.
+5. Run `mnac/cache` before shutting down to save config and cache.
 
-# Update log
+## Update log
 - 1.0: Initial release.
 
 [wiki]: https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe
