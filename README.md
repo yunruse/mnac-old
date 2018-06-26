@@ -7,4 +7,16 @@ Meta Noughts and Crosses (aka [Ultimate Tic-Tac-Toe](wiki)) is a tactical twist 
 
 ![A screenshot of the Discord bot. A player types in '6', and the bot responds with an image of the game.](assets/screenshot_discord.png)
 
+## Features
+
+- A core game class, freely available per [license] to reuse in your own project;
+- An ASCII terminal version, if you enjoy playing games in Vim or something;
+- A desktop application (in Tkinter), with mouse and keyboard support;
+- A Discord bot that works per-channel or via direct messages, as simple as `mnac/start` for each player, a 
+-
+
+## Update log
+- 1.0: Initial release.
+
 [wiki]: https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe
+[license]: license.txt
