@@ -111,6 +111,10 @@ mention = lambda user: "<@{}>".format(user.id)
 
 @bot.event
 async def on_ready():
+    global CACHE_CHANNEL
+    if CACHE_CHANNEL is None:
+        CACHE_CHANNEL = bot.get_channel(str(CONFIG.get('cache_channel')))
+    
     printf('Welcome,        {0.user} ({0.user.id})', bot)
     printf('Server invite:  https://discordapp.com/oauth2/authorize?client_id={}&scope=bot',
         bot.user.id)
@@ -187,11 +191,9 @@ class DiscordMNAC(MNAC):
             # to chuck all images into. This ensures the status
             # is always returned as an embed, not an image,
             # and means users can't just delete images.
-            global CACHE_CHANNEL
+
             if CACHE_CHANNEL is None:
-                CACHE_CHANNEL = bot.get_channel(str(CONFIG.get('cache_channel')))
-                if not CACHE_CHANNEL:
-                    return await respond('cache_not_found', self.channel, self.current_user)
+                return await respond('cache_not_found', self.channel, self.current_user)
             
             embed = discord.Embed()
             player, other = self._namePlayers()
