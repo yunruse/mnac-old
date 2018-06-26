@@ -68,7 +68,15 @@ printf('Loading configuration...')
 LANGUAGES = _data_load(PATH_LANGUAGES, required=True)
 # {lang_code(s): {response_id(s): translation}}
 
-CONFIG = _data_load(PATH_CONFIG)
+CONFIG = {
+    'default_language': 'en',
+    'max_lobby_time': 10,
+    'max_game_time': 1800,
+    'save_interval': 600,
+    'render_file_size': 450,
+    'render_file_format': 'png',
+}
+CONFIG.update(_data_load(PATH_CONFIG))
 CACHE_CHANNEL = None
 
 SERVERS = _data_load(PATH_SERVERS)
