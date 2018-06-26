@@ -5,4 +5,6 @@
 
 Meta Noughts and Crosses (aka [Ultimate Tic-Tac-Toe](wiki)) is a tactical twist on the classic game. Make no mistake - it is easy to learn but difficult to master! MNAC can be played via the terminal, UI, or via a Discord bot.
 
+![A screenshot of the Discord bot. A player types in '6', and the bot responds with an image of the game.](assets/screenshot_discord.png)
+
 [wiki]: https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe
