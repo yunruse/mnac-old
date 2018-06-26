@@ -209,8 +209,6 @@ class UIMNAC(tk.Tk):
         self.restart()
     
     def restart(self, *event):
-        # implies self.game.player = 1
-        self.isFirstMove = True
         self.showHelp = False
         self.error = ''
         
@@ -279,10 +277,6 @@ class UIMNAC(tk.Tk):
         
         if self.game.winner:
             return self.restart()
-        
-        if self.isFirstMove:
-            # Player 1 has selected mouse
-            self._keyboardPlayer = 2
 
         if self.mouseMayPlay:
             if self.game.state in ('outer', 'begin'):
@@ -296,16 +290,11 @@ class UIMNAC(tk.Tk):
     def onKey(self, index):
         if self.game.winner:
             return self.restart()
-            
-        if self.isFirstMove:
-            # Player 1 has selected keyboard
-            self._keyboardPlayer = 1
         
         if self.keyboardMayPlay:
             self.play(numpad(index))
 
     def play(self, index):
-        self.isFirstMove = False
         if self.game.winner:
             return self.restart()
         self.error = ''
