@@ -44,6 +44,7 @@ class CanvasRender(render.Render):
     def __init__(self, app):
         self.app = app
         self.canvas = app.canvas
+        self.coordinates = {}
 
     def draw(self):
         self.game = self.app.game
@@ -150,13 +151,13 @@ class CanvasRender(render.Render):
                 header(w/2, self.topleft[1] + i * 1.5 * font_size, fill='black', text=text)
         
 
-    def cell(self, i, j, tl, size, fill):
+    def cell(self, grid, cell, tl, size, fill):
         tl += self.topleft
+        coords = (*tl, *(tl+size))
         backing = self.canvas.create_rectangle(
-            *(tl), *(tl + size), width=0, fill=fill, tags='backing')
-        
-        # register i and j for clicks
-        self.canvas.tag_bind(backing, '<Button-1>', lambda *e: self.app.onCellClick(i-1, j-1))
+            *coords, width=0, fill=fill, tags='backing')
+
+        self.coordinates[grid+1, cell+1] = coords
 
     def ellipse(self, coords, outline, width):
         coords += (*self.topleft, *self.topleft)
@@ -266,7 +267,16 @@ class UIMNAC(tk.Tk):
             else:
                 self.clearError()
 
-    def onCellClick(self, grid, cell):
+        # Iterate through all coordinates the renderer claims
+        # each cell was at
+        for coord, bounds in self.render.coordinates.items():
+            x1, y1, x2, y2 = bounds
+            if x1 <= event.x <= x2 and y1 <= event.y <= y2:
+                grid, cell = coord
+                break
+        else:
+            return
+        
         if self.game.winner:
             return self.restart()
         
