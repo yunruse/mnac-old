@@ -126,8 +126,8 @@ class Render:
                     color = TELEMAIN if wasLast else CROSSMAIN
                     top_left = celltl + cell / 18
                     bottom_right = celltl + cell - cell / 18
-                    self.ellipse((*top_left, *bottom_right),
-                        outline=color, width=cell/9)
+                    coords = np.array((*top_left, *bottom_right))
+                    self.ellipse(coords, outline=color, width=cell/9)
                 
                 elif cellStatus == 2:
                     coords = celltl + CROSS * cell
@@ -145,8 +145,10 @@ class Render:
             # %% grid markers - nought, cross
             
             if gridStatus == 1:
-                self.ellipse((*(gridtl + cell/6), *(gridtl + cell*3 - cell/6)),
-                    outline=CROSSMAIN, width=cell/3)
+                top_left = gridtl + cell / 6
+                bottom_right = gridtl + cell * (3 - 1/6)
+                coords = np.array((*top_left, *bottom_right))
+                self.ellipse(coords, outline=CROSSMAIN, width=cell/3)
             
             elif gridStatus == 2:
                 coords = gridtl + (CROSS * cell * 3)
