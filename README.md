@@ -21,13 +21,17 @@ If you just want the UI, grab the dependencies required:
 
 `pip install numpy Pillow`
 
+Then run `terminal.py` or `tk.py` for the terminal or UI versions of the game.
+
 If you want the Discord bot, grab the dependencies:
 
 `pip install numpy Pillow discord.py toml`
 
-1. [Create a Discord bot](Discord API), and place the token inside of `config/tokens.txt`
-2. Copy `config_sample.toml` to `config.toml`, and modify settings
-2. To save time and processing power, the bot caches the URL of each render of the game. Create a private channel, disable notifications on it, and run `mnac/cache here` - this is where all images will be sent.
+Then, simply:
+
+1. [Create a Discord bot](API), and place the token inside of `config/tokens.txt`.
+2. Rename `config_sample.toml` to `config.toml`, and modify settings as you please.
+3. To save time and processing power, the bot caches the URL of each render of the game. Create a private channel, disable notifications on it, and run `mnac/cache here` - this is where all images will be sent.
 
 # Update log
 - 1.0: Initial release.
@@ -35,4 +39,4 @@ If you want the Discord bot, grab the dependencies:
 [wiki]: https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe
 [license]: license.txt
 [download]: https://github.com/yunruse/MNAC/archive/master.zip
-[Discord API]: https://discordapp.com/developers/applications/me
+[API]: https://discordapp.com/developers/applications/me
