@@ -43,6 +43,7 @@ help <command>: help with a command
 start:          open lobby / start game
 stop:           stop game if you're playing
 random:         let fate decide
+lang:           change language
 ```"""
 
 help_start = """\
@@ -97,13 +98,14 @@ noughts = "Noughts"
 crosses = "Crosses"
 
 help = """\
-In-development bot fer Meta Noughts and Crosses, a swashbucklin' kind of Noughts and Crosses all wee pirates remember. Any pirate can learn, but only few can master 'er.
+I be a bot fer Meta Noughts and Crosses, a swashbucklin' kind of Noughts and Crosses all wee pirates remember. Any pirate can learn, but only few can master 'er.
 
 Only one game is allowed per ship. Commands:```
 help <command>:     help with a command
 start:              start a new game
 stop:               stop game if you're playing
 random:             let fate decide
+lang:               change ye language
 ```"""
 
 help_start = """\
@@ -162,10 +164,11 @@ help = """\
 Eine Discord-Bot für Meta Noughts and Crosses, eine taktische Variante für Kreis und Kreuz. Einfach zu verstehen, schwierig zu meistern, MNAC ist einer überraschend tief Gendankenspiel!
 
 Nur eine Spiel pro Kannel. Kommande:```
-help <Kommand>:     seh hilf
-start:              fang eine Lobby oder Spiel an
-stop:               halt eine Spiel an
-random:             lass Schicksal deinen Zug entschieden
+help <Kommand>: seh hilf
+start:          fang eine Lobby oder Spiel an
+stop:           halt eine Spiel an
+random:         lass Schicksal deinen Zug entschieden
+lang:           Sprach ändern
 ```"""
 
 help_start = """\
