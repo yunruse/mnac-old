@@ -20,6 +20,7 @@ status_solo = "No lobby needed - you're welcome to do [>start<] and practice (or
 status_lobby = "There's a lobby: {noughts} is noughts, and crosses has {time_left:1d} seconds left to do [>start<]"
 status_empty = "There's no game in this channel - do [>start<] to start a lobby."
 
+start_game_started = "Okay, {noughts}, type `1` through `9` to play. Good luck!"
 start_lobby_open = "Okay >user<, you are noughts. Tell crosses to run [>start<] in {time_left} seconds - or type it yourself to practise!"
 start_alreadyrunning_nonplayer = "Sorry, one game per channel. Ask the players to do [>stop<] if they stopped halfway."
 start_alreadyrunning_player = "A game is already running (do [>stop<] to stop it early):"
@@ -81,6 +82,7 @@ status_solo = "We on private terms 'ere lad, so you can just run [>start<] and p
 status_lobby = "{noughts} be noughts, and there's {time_left:1d} seconds fer crosses ta do [>start<]."
 status_empty = "There be no game in these waters. Run [>start<], lads!"
 
+start_game_started = "Yarr {noughts}, type `1` threw `9` ta play. Fortune be upon ye both, lads!"
 start_lobby_open = "Yarr >user<, ye be noughts. Tell crosses ta run [>start<] in {time_left} seconds - or type it yeself to practice."
 start_alreadyrunning_nonplayer = "Yer an impatient one, >user<. One game per ship, aye?"
 start_alreadyrunning_player = "Ye already got a game runnin'. (Do [>stop<] to stop it early):"
@@ -141,6 +143,7 @@ status_solo = "Du brauchst kein Lobby - nur tu [>start<], zu üben (oder um mit 
 status_lobby = "Es gibt eine Lobby: {noughts} ist Kreiz, und Kreuz hat {time_left:1d} Sekonden um [>start<] zu tun."
 status_empty = "Es gibt keine Spiel in diesem Kannel - tu [>start<], um eine Lobby anzufangen."
 
+start_game_started = "Ok {noughts}, tu `1` durch `9` zu spielen. Mit glück!"
 start_lobby_open = "Ok >user<, du bist Kreiz. Kreuz, du hast {time_left} Sekonden, um [>start<] zu tun."
 start_alreadyrunning_nonplayer = "Entschuldigung >user< - nur ein Spiel pro Kannel."
 start_alreadyrunning_player = "Die Spiel wird noch angefangt. Tu [>stop<], um es zu stoppen."
