@@ -251,7 +251,10 @@ class DiscordMNAC(mnac.MNAC):
                 message = await bot.send_file(CACHE_CHANNEL, file_path)
                 link = message.attachments[0]['url']
                 CACHE[game_hash] = [int(message.id), int(link.split('/')[-2])]
-                os.remove(file_path)
+                try:
+                    os.remove(file_path)
+                except FileNotFoundError:
+                    pass # This sometimes happens if a lot of new renders happen
 
             
             embed.set_image(url=link)
