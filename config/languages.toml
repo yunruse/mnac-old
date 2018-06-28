@@ -4,24 +4,24 @@ language_changed = "Language changed. Hello!"
 language_help = "You're speaking English. Do [>lang code<] to set this channel's language:"
 command_unknown = "Sorry, [>{command}<] is not a valid command. Do [>help<] for a list."
 
-1 = ">user<, house rules for this game won't let you start in the middle. It's too tactically important to give you for free! :)"
+1 = ">user<, house rules for this game won't let you start in the middle. It's too tactically important to just give for free :)"
 11 = ">user<, you can't take a cell that's already taken."
 21 = ">user<, you can't go back to the same grid. Gotta keep movin' and shakin'."
 22 = ">user<, that grid is taken."
 
-play_no_args = ">user<, I need a direction with that - or you could run [>random<] if you want..."
-play_unknown_direction = ">user<, I don't know any {direction!r}."
-play_unknown_error = ">user<, an unknown error occured."
+play_no_args = "Play in which direction? For a direction N, you can do  [>play N<] or just `N`. Or you can always roll the dice and do [>random<] if you want..."
+play_unknown_direction = "Sorry, I don't know any {direction!r}."
+play_unknown_error = "An unknown error occured. I... don't know what went wrong. Please report an issue: https://github.com/yunruse/mnac"
 
-stop_success_solo = "Okay >user<, stopped the game. Hope you had fun!"
-stop_success_multi = "Okay >user<, stopped the game. but I hope >opponent< is okay with that!"
+stop_success_solo = "Stopped the game. Hope you had fun!"
+stop_success_multi = "Stopped the game. but I hope >opponent< is okay with that!"
 
 status_solo = "No lobby needed - you're welcome to do [>start<] and practice (or play locally)."
 status_lobby = "There's a lobby: {noughts} is noughts, and crosses has {time_left:1d} seconds left to do [>start<]"
 status_empty = "There's no game in this channel - do [>start<] to start a lobby."
 
 start_lobby_open = "Okay >user<, you are noughts. Tell crosses to run [>start<] in {time_left} seconds - or type it yourself to practise!"
-start_alreadyrunning_nonplayer = "Sorry >user<, one game per channel."
+start_alreadyrunning_nonplayer = "Sorry, one game per channel. Ask the players to do [>stop<] if they stopped halfway."
 start_alreadyrunning_player = "A game is already running (do [>stop<] to stop it early):"
 
 result_draw = "It's a draw. Well played, >user< and >opponent<!"
@@ -35,29 +35,27 @@ noughts = "Noughts"
 crosses = "Crosses"
 
 help = """\
->user<:
 I am a beta bot for Meta Noughts and Crosses, a tactical variant on the old classic. Simple to understand, difficult to master, MNAC will have you playing mind games with the best of them. Jump into it now, or ask Wikipedia: https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe
 
 One game is allowed per channel. Commands:```
-help:     help with a command
-start:    start game (see [>help start<])
-stop:     stop game if you're playing
-play:     play a move
-random:   let fate decide
+help <command>: help with a command
+start:          open lobby / start game
+stop:           stop game if you're playing
+random:         let fate decide
 ```"""
 
 help_start = """\
->user<: [>start<] can take the following options: ```
-solo: Skip lobby
+[>start<] can take the following options: ```
+solo: Skip lobby and practice with self
 allowMiddle: allow starting in the middle grid
 ```"""
 
 help_play = "You can play in grid or cell N by doing either [>play N<] or just `N`."
 
-cache_here = "Okay, >user<, I'll dump cache here. Don't delete messages or it will result in errors - instead run [>cache purge<] to delete them all."
-cache_purged = "Okay >user<, deleted all cache."
-cache_not_found = "CACHE CHANNEL NOT FOUND! There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
-cache_saved = "Okay >user<, saved settings and cache to file."
+cache_here = "Okay, dumping cache here. Don't delete messages or the cache file or it will result in errors - instead run [>cache purge<] to delete them all and restart the cache."
+cache_purged = "Okay, deleted all cache."
+cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
+cache_saved = "Okay, saved settings and cache to file."
 
 
 
@@ -72,76 +70,76 @@ command_unknown = "Yarr, I have no idea what {command!r} be."
 21 = ">user<, ye cannae go back to the same ocean. Keep on yer toes lad!"
 22 = ">user<, that grid is plundered."
 
-play_no_args = ">user<, ye got to tell me where ye want to go - or play the dice and run [>random<]..."
-play_unknown_direction = ">user<, no pirate says {direction!r} as a direction."
-play_unknown_error = ">user<, Davy Jones must have taken ye game, it be error'd."
+play_no_args = "Ye got to tell me where ye want to go - fer a direction 1 to 9, just type the number Or ye can play the dice and run [>random<]..."
+play_unknown_direction = "No self-respecting pirate says {direction!r} as a direction. (Try a number, ye bilge-rat.)"
+play_unknown_error = "Yarr... Davy Jones has cursed ye game. Report the error: https://github.com/yunruse/mnac"
 
-stop_success_solo = "Yarr >user<, you quit. Hope ye had fun, ye yellow-belly."
-stop_success_multi = "Yarr >user<, ye yellow-belly, I stopped it."
+stop_success_solo = "Yarr, hope ye got yer trainin' in."
+stop_success_multi = "Yarr, ye quit, ye yellow-belly."
 
 status_solo = "We on private terms 'ere lad, so you can just run [>start<] and practice (or play with your crewmates)."
-status_lobby = "{noughts} be noughts, and there's {time_left:1d} seconds fer crosses ta [>start<]"
+status_lobby = "{noughts} be noughts, and there's {time_left:1d} seconds fer crosses ta do [>start<]."
 status_empty = "There be no game in these waters. Run [>start<], lads!"
 
 start_lobby_open = "Yarr >user<, ye be noughts. Tell crosses ta run [>start<] in {time_left} seconds - or type it yeself to practice."
 start_alreadyrunning_nonplayer = "Yer an impatient one, >user<. One game per ship, aye?"
 start_alreadyrunning_player = "Ye already got a game runnin'. (Do [>stop<] to stop it early):"
 
-result_draw = "*Well blow me over*, it be a draw. Good game, >user< and >opponent<."
+result_draw = "*Well blow me over*, it be a draw. Heartily played, lads."
 result_win = "Yarr, {winner} wins!"
 
-begin = "{player}, which ocean do ye want to start in?"
-inner = "{player}, which space do ye want to plunder?"
-outer = "{player}, which ocean do ye want to send {other} to?"
+begin = "{player} ta decide where ta start"
+inner = "{player} ta decide where ta plunder"
+outer = "{player} ta decide where ta send {other} to"
 noughts = "Noughts"
 crosses = "Crosses"
 
 help = """\
->user<:
 In-development bot fer Meta Noughts and Crosses, a swashbucklin' kind of Noughts and Crosses all wee pirates remember. Any pirate can learn, but only few can master 'er.
 
-One game is allowed per channel. Commands:```
-help:     help with a command
-tutorial: play a (scripted) tutorial
-start:    
-stop:     stop game if you're playing
-play:     play a move
-random:   let fate decide
+Only one game is allowed per ship. Commands:```
+help <command>:     help with a command
+start:              start a new game
+stop:               stop game if you're playing
+random:             let fate decide
 ```"""
 
 help_start = """\
->user<:
-Running [>start<] opens a temporary lobby, where the second player can join. The first player can set house rules by including these options in the [>start <options><] command: ```
-solo: Single-user (local play)
-allowMiddle: allow starting in the middle grid
+Running [>start<] opens a lil lobby, where the other pirate can join. The first player can set house rules by typin; these after the command: ```
+solo: Practice with yeself
+allowMiddle: Allow darn cheaters to take the middle grid first thing
 ```"""
 
-help_play = "You can play in grid or cell N by doing either [>play N<] or just `N`."
+help_play = "Ye can play in grid or cell N by doing either [>play N<] or just `N`."
 
 
+cache_here = "Okay, dumping cache here. Don't delete messages or the cache file or it will result in errors - instead run [>cache purge<] to delete them all and restart the cache."
+cache_purged = "Okay, deleted all cache."
+cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
+cache_saved = "Okay, saved settings and cache to file."
 
 
 [de]
 Language = "Deutch (du)"
-language_changed = "Sprach wird geändert. Guten Tag!"
-language_help = "Du sprachst Deutsch. Tu [>lang code<], um der Sprach dieser Kannel zu wählen."
+language_changed = "Sprach wurde geändert. Guten Tag!"
+language_help = "Du sprachst Deutsch, nein? Tu [>lang code<], um der Sprach dieser Kannel zu wählen."
 command_unknown = "Ich weiß keine Kommand, die {command!r} heißt."
 
-1 = ">user<, die Hausregeln lassen dich nicht ins Mittlel anfangen. Es ist zu wichtig zu kostenlos ausgeben! :)"
-11 = ">user<, du kannst nicht eine Zell nehmen, das noch genehmt wird."
-21 = ">user<, du kannst nicht zurück nach dem gleichen Grid gehen!"
-22 = ">user<, diese Grid wird genehmt."
+1 = "Die Hausregeln lassen dich nicht ins Mittlel anfangen. Es ist zu wichtig, frei auszugeben! :)"
+11 = "Du kannst nicht eine Zell nehmen, das noch genehmt wird."
+21 = 'Du kannst nicht zurück nach dem gleichen Grid gehen!"
+22 = "Diese Grid wird noch genehmt."
 
-play_no_args = ">user<, ich brauche eine Richtung damit - oder du kannst [>random<] runnen."
-play_unknown_direction = ">user<, ich weiß keine Richtung, die {direction!r} heißt."
-play_unknown_error = ">user<, an unknown error occured."
+play_no_args = "Ich brauche eine Richtung zu spielen! Tu `1` durch `9` - oder du kannst [>random<] tun."
+play_unknown_direction = "Ich weiß keine Richtung, die {direction!r} heißt."
+play_unknown_error = "Einer unbekannten Problem passiert. Bitt kontakten Sie mich mit dem Problem: https://github/yunruse/mnac"
 
-stop_success_solo = "Ok >user<, die Spiel wird gestoppt. Ich hoffe, dass es Spaß macht!"
-stop_success_multi = "Ok >user<, die Spiel wird gestoppt, aber ich hoffe, dass >opponent< damit ok ist!"
+stop_success_solo = "Die Spiel wird gestoppt. Ich hoffe, dass es Spaß gemacht hat!"
+stop_success_multi = "Die Spiel wird gestoppt, aber ich hoffe, dass >opponent< damit ok ist!"
 
-status_solo = "Keine Lobby wird gebraucht - du kannst [>start<]en und üben (oder mit Freunden spielen)."
-status_lobby = "Es gibt eine Lobby: {noughts} ist Kreiz, und Kreuz hat {time_left:1d} Sekonden zu [>start<]en"
-status_empty = "Es gibt keine Spiel in diesem Kannel - [>start<], um eine Lobby zu starten."
+status_solo = "Du brauchst kein Lobby - nur tu [>start<], zu üben (oder um mit Freunden zu spielen)."
+status_lobby = "Es gibt eine Lobby: {noughts} ist Kreiz, und Kreuz hat {time_left:1d} Sekonden um [>start<] zu tun."
+status_empty = "Es gibt keine Spiel in diesem Kannel - tu [>start<], um eine Lobby anzufangen."
 
 start_lobby_open = "Ok >user<, du bist Kreiz. Kreuz, du hast {time_left} Sekonden, um [>start<] zu tun."
 start_alreadyrunning_nonplayer = "Entschuldigung >user< - nur ein Spiel pro Kannel."
@@ -150,30 +148,32 @@ start_alreadyrunning_player = "Die Spiel wird noch angefangt. Tu [>stop<], um es
 result_draw = "Es gibt keine Gewinner. Gut gespielt, >user< und >opponent<!"
 result_win = "{winner} hat gewonnen!"
 
-begin = "{player}, welche Grid magst du inzustarten?"
-inner = "{player}, welche Zell magst du deine Zeich inzustellen?"
-outer = "{player}, wo willst du {other} schicken?"
+begin = "{player} anzufangen"
+inner = "{player}, ihre Zeich in einem Zell inzustellen"
+outer = "{player}, {other} zu schicken?"
 
 noughts = "Kreis"
 crosses = "Kreuz"
 
 help = """\
-Alpha bot für Meta Noughts and Crosses, eine taktische Variante für Kreis und Kreuz. Noughts and Crosses. Simple to understand, difficult to master, MNAC will have you playing mind games with the best of them.
+Eine Discord-Bot für Meta Noughts and Crosses, eine taktische Variante für Kreis und Kreuz. Einfach zu verstehen, schwierig zu meistern, MNAC ist einer überraschend tief Gendankenspiel!
 
-Nur eine Spiel pro Kannel. Commands:```
-help:     seh diese Text
-tutorial: spiel a (scripted) tutorial
-start:    start a new game ([>help start<] for more)
-stop:     abruptly stop, if you're a player
-play:     (1-9, 'top left', 'west', 'centre', etc)
-random:   let fate decide your move
+Nur eine Spiel pro Kannel. Kommande:```
+help <Kommand>:     seh hilf
+start:              fang eine Lobby oder Spiel an
+stop:               halt eine Spiel an
+random:             lass Schicksal deinen Zug entschieden
 ```"""
 
 help_start = """\
->user<:
 Running [>start<] opens a temporary lobby, where the second player can join. The first player can set house rules by including these options in the [>start <options><] command: ```
 solo: Single-user (local play)
 allowMiddle: allow starting in the middle grid
 ```"""
 
 help_play = "You can play in grid or cell N by doing either [>play N<] or just `N`."
+
+cache_here = "Okay, dumping cache here. Don't delete messages or the cache file or it will result in errors - instead run [>cache purge<] to delete them all and restart the cache."
+cache_purged = "Okay, deleted all cache."
+cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
+cache_saved = "Okay, saved settings and cache to file."
