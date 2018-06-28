@@ -131,7 +131,7 @@ command_unknown = "Ich weiß keine Kommand, die {command!r} heißt."
 
 1 = "Die Hausregeln lassen dich nicht ins Mittlel anfangen. Es ist zu wichtig, frei auszugeben! :)"
 11 = "Du kannst nicht eine Zell nehmen, das noch genehmt wird."
-21 = 'Du kannst nicht zurück nach dem gleichen Grid gehen!"
+21 = "Du kannst nicht zurück nach dem gleichen Grid gehen!"
 22 = "Diese Grid wird noch genehmt."
 
 play_no_args = "Ich brauche eine Richtung zu spielen! Tu `1` durch `9` - oder du kannst [>random<] tun."
