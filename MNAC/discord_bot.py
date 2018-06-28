@@ -413,15 +413,19 @@ async def on_message(message):
             set_game(game)
             await game.show()
 
-        if mode == 'game' and user not in game.users:
-            await r('lobby_game_already_started')
+        if mode == 'game':
+            if user in game.users:
+                await r('start_alreadyrunning_player')
+                await game.show()
+            else:
+                await r('start_alreadyrunning_nonplayer')
         
         if game is None:
             # start lobby
             lobby = {'kind': 'lobby', 'noughts': user,
                      'time_started': now, 'noMiddleStart': noMiddleStart}
             set_game(lobby)
-            await r('lobby_open', time_left=CONFIG['max_lobby_time'])
+            await r('start_lobby_open', time_left=CONFIG['max_lobby_time'])
 
     elif command in 'stop play random'.split() and mode == 'game' and user in game.users:
 

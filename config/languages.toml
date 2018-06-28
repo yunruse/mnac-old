@@ -20,8 +20,9 @@ status_solo = "No lobby needed - you're welcome to do [>start<] and practice (or
 status_lobby = "There's a lobby: {noughts} is noughts, and crosses has {time_left:1d} seconds left to do [>start<]"
 status_empty = "There's no game in this channel - do [>start<] to start a lobby."
 
-lobby_open = "Okay >user<, you are noughts. Tell crosses to run [>start<] in {time_left} seconds - or type it yourself to practise!"
-lobby_game_already_started = "Sorry >user<, one game per channel."
+start_lobby_open = "Okay >user<, you are noughts. Tell crosses to run [>start<] in {time_left} seconds - or type it yourself to practise!"
+start_alreadyrunning_nonplayer = "Sorry >user<, one game per channel."
+start_alreadyrunning_player = "A game is already running (do [>stop<] to stop it early):"
 
 result_draw = "It's a draw. Well played, >user< and >opponent<!"
 result_win = ">user< wins!"
@@ -82,8 +83,9 @@ status_solo = "We on private terms 'ere lad, so you can just run [>start<] and p
 status_lobby = "{noughts} be noughts, and there's {time_left:1d} seconds fer crosses ta [>start<]"
 status_empty = "There be no game in these waters. Run [>start<], lads!"
 
-lobby_open = "Yarr >user<, ye be noughts. Tell crosses ta run [>start<] in {time_left} seconds - or type it yeself to practice."
-lobby_game_already_started = "Yer an impatient one, >user<. One game per ship, aye?"
+start_lobby_open = "Yarr >user<, ye be noughts. Tell crosses ta run [>start<] in {time_left} seconds - or type it yeself to practice."
+start_alreadyrunning_nonplayer = "Yer an impatient one, >user<. One game per ship, aye?"
+start_alreadyrunning_player = "Ye already got a game runnin'. (Do [>stop<] to stop it early):"
 
 result_draw = "*Well blow me over*, it be a draw. Good game, >user< and >opponent<."
 result_win = "Yarr, {winner} wins!"
@@ -141,8 +143,9 @@ status_solo = "Keine Lobby wird gebraucht - du kannst [>start<]en und üben (ode
 status_lobby = "Es gibt eine Lobby: {noughts} ist Kreiz, und Kreuz hat {time_left:1d} Sekonden zu [>start<]en"
 status_empty = "Es gibt keine Spiel in diesem Kannel - [>start<], um eine Lobby zu starten."
 
-lobby_open = "Ok >user<, du bist Kreiz. Kreuz, du hast {time_left} Sekonden, um [>start<] zu tun."
-lobby_game_already_started = "Entschuldigung >user< - nur ein Spiel pro Kannel."
+start_lobby_open = "Ok >user<, du bist Kreiz. Kreuz, du hast {time_left} Sekonden, um [>start<] zu tun."
+start_alreadyrunning_nonplayer = "Entschuldigung >user< - nur ein Spiel pro Kannel."
+start_alreadyrunning_player = "Die Spiel wird noch angefangt. Tu [>stop<], um es zu stoppen."
 
 result_draw = "Es gibt keine Gewinner. Gut gespielt, >user< und >opponent<!"
 result_win = "{winner} hat gewonnen!"
