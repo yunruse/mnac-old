@@ -414,7 +414,7 @@ async def on_message(message):
         if noughts:
             game = DiscordMNAC(message.channel, noughts, user, noMiddleStart=noMiddleStart)
             set_game(game)
-            await r('start_game_started')
+            await r('start_game_started', noughts=mention(noughts))
             await game.show()
 
         if mode == 'game':
