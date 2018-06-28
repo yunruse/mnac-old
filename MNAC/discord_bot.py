@@ -441,7 +441,7 @@ async def on_message(message):
 
         if command == 'stop':
             set_game(None)
-            await r('stop_success_{}'.format('solo' if game.is_solo else 'multi_'))
+            await r('stop_success_{}'.format('solo' if game.is_solo else 'multi'))
 
         elif command == 'play':
             if args:
