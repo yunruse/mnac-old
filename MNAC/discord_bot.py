@@ -444,8 +444,10 @@ async def on_message(message):
             await r('stop_success_{}'.format('solo' if game.is_solo else 'multi'))
 
         elif command == 'play':
+            if game.current_user != user:
+                return await r('play_wrong_user', right_player=mention(game.current_user))
             if args:
-                direction = mnac.getIndex(args.pop(0))
+                direction = mnac.getIndex(subcommand)
                 if isinstance(direction, int):
                     await play(direction + 1)
                 else:

@@ -9,6 +9,7 @@ command_unknown = "Sorry, [>{command}<] is not a valid command. Do [>help<] for 
 21 = ">user<, you can't go back to the same grid. Gotta keep movin' and shakin'."
 22 = ">user<, that grid is taken."
 
+play_wrong_user = "Hey, you're not {right_player}!"
 play_no_args = "Play in which direction? For a direction N, you can do  [>play N<] or just `N`. Or you can always roll the dice and do [>random<] if you want..."
 play_unknown_direction = "Sorry, I don't know any {direction!r}."
 play_unknown_error = "An unknown error occured. I... don't know what went wrong. Please report an issue: https://github.com/yunruse/mnac"
@@ -72,6 +73,7 @@ command_unknown = "Yarr, I have no idea what {command!r} be."
 21 = ">user<, ye cannae go back to the same ocean. Keep on yer toes lad!"
 22 = ">user<, that grid is plundered."
 
+play_wrong_user = "Ye bilge rat, you ain't {right_player}!"
 play_no_args = "Ye got to tell me where ye want to go - fer a direction 1 to 9, just type the number Or ye can play the dice and run [>random<]..."
 play_unknown_direction = "No self-respecting pirate says {direction!r} as a direction. (Try a number, ye bilge-rat.)"
 play_unknown_error = "Yarr... Davy Jones has cursed ye game. Report the error: https://github.com/yunruse/mnac"
@@ -134,6 +136,7 @@ command_unknown = "Ich weiß keine Kommand, die {command!r} heißt."
 21 = "Du kannst nicht zurück nach dem gleichen Grid gehen!"
 22 = "Diese Grid wird noch genehmt."
 
+play_wrong_user = "Du bist nicht {right_player}!"
 play_no_args = "Ich brauche eine Richtung zu spielen! Tu `1` durch `9` - oder du kannst [>random<] tun."
 play_unknown_direction = "Ich weiß keine Richtung, die {direction!r} heißt."
 play_unknown_error = "Einer unbekannten Problem passiert. Bitt kontakten Sie mich mit dem Problem: https://github/yunruse/mnac"
