@@ -106,10 +106,10 @@ def _data_save(path, data):
             json.dump(data, f)
         elif path.endswith('.toml'):
             toml.dump(data, f)
-            
-def save_data():
-    printf('Saving config and cache to file...')
 
+def save_servers():
+    '''Called every move'''
+    printf('Saving game state...')
     servers_serial = {}
     for chan in SERVERS:
         state = SERVERS[chan]['state']
@@ -121,10 +121,15 @@ def save_data():
                 state['noughts'] = state['noughts'].id
         
         servers_serial[chan] = {'language': SERVERS[chan]['language'], 'state': state}
+    _data_save(PATH_SERVERS, servers_serial)
+            
+def save_data():
+    '''Called infrequently'''
+    printf('Saving config and cache...')
         
     _data_save(PATH_CACHE, CACHE)
     _data_save(PATH_CONFIG, CONFIG)
-    _data_save(PATH_SERVERS, servers_serial)
+    save_servers()
 
 async def save_clock():
     interval = CONFIG['save_interval']
@@ -438,6 +443,8 @@ async def on_message(message):
             await game.show()
             if game.winner:
                 set_game(None)
+            else:
+                save_server()
 
         if command == 'stop':
             set_game(None)
