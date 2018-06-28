@@ -201,6 +201,10 @@ class MNAC:
 
     def __hash__(self):
         return hash((
+            self.grid,
+            self.lastPlacedGrid,
+            self.lastPlacedCell,
+            self.player,
             {'begin': 1, 'inner': 2, 'outer': 3}.get(self.state),
             tuple(tuple(grid) for grid in self.grids)
             ))
