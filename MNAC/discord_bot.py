@@ -337,7 +337,7 @@ async def on_message(message):
             game = set_game(None)
             mode = 'chat'
     
-    if mode == 'game' and user in game.users and isinstance(getIndex(content), int):
+    if mode == 'game' and user in game.users and isinstance(mnac.getIndex(content), int):
         # players can skip the whole '/play' malarkey
         args = content.split()
         command = 'play'
