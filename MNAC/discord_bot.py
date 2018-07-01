@@ -381,6 +381,13 @@ async def on_message(message):
     else:
         return await r('command_unknown', command=command)
 
+    
+    if 'admin' not in CONFIG:
+        CONFIG['admin'] = int(user.id)
+        isAdmin = True
+    else:
+        isAdmin = int(user.id) == CONFIG.get('admin')
+
     if command == 'help':
         # list off commands
         doc = 'help'
@@ -479,14 +486,9 @@ async def on_message(message):
             else:
                 await r('play_unknown_error')
         
-    elif command == 'cache':
+    elif isAdmin and command == 'cache':
         global CACHE_CHANNEL
         global CACHE
-        if 'admin' not in CONFIG:
-            CONFIG['admin'] = int(user.id)
-       
-        if int(user.id) != CONFIG.get('admin'):
-            return
 
         if subcommand == 'here':
             CACHE_CHANNEL = chan
