@@ -307,7 +307,7 @@ class DiscordMNAC(mnac.MNAC):
 
 
 
-COMMANDS = 'help tutorial status start stop play random lang cache'.split()
+COMMANDS = 'help tutorial status start stop play random lang cache shutdown'.split()
 
 @bot.event
 async def on_message(message):
@@ -509,6 +509,11 @@ async def on_message(message):
             await r('cache_saved')
 
         save_data()
+
+    elif isAdmin and command == 'shutdown':
+        await r('shutdown')
+        await asyncio.sleep(10)
+        await bot.logout()    
 
 
 with open(PATH_TOKEN, encoding='utf8') as f:

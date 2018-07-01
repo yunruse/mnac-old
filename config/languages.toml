@@ -59,6 +59,7 @@ cache_here = "Okay, dumping cache here. Don't delete messages or the cache file 
 cache_purged = "Okay, deleted all cache."
 cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
 cache_saved = "Okay, saved settings and cache to file."
+shutdown = "Okay, shutting down in 10 seconds."
 
 
 
@@ -123,6 +124,7 @@ cache_here = "Okay, dumping cache here. Don't delete messages or the cache file 
 cache_purged = "Okay, deleted all cache."
 cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
 cache_saved = "Okay, saved settings and cache to file."
+shutdown = "Yarr, switchin' off in 10 seconds."
 
 
 [de]
