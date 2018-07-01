@@ -97,7 +97,7 @@ class AsciiMNAC(mnac.MNAC):
                 self.action))
 
             inp = input(prompt).lower().strip().replace(' ', '').replace('-', '')
-            if 'exit' in inp:
+            if 'exit' in inp or inp == 'q':
                 sys.exit(0)
             elif not inp:
                 continue
