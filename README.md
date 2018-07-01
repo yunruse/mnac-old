@@ -15,27 +15,40 @@ Meta Noughts and Crosses (aka [Ultimate Tic-Tac-Toe](wiki)) is a tactical twist 
 
 - A core game class and renderer, freely available per [license] to reuse in your own project
 - An ASCII terminal version, if you enjoy playing games in Vim or something
+- A Tkinter program, playable by mouse or keyboard
 - A Discord bot that works per-channel or via direct messages, as simple as `mnac/start` for each player, and with extensible support for different languages
 
-## Installation
+## Installation and setup
 
-First, [download] and extract. If you just want the UI, grab the dependencies required in a terminal of your choice:
+First, grab the Python requirements - grab Python 3.5 or above and:
 
-`pip install numpy Pillow`
+`pip3 install numpy Pillow discord.py toml`
 
-Then run `terminal.py` or `tk.py` for the terminal or UI versions of the game.
+You can exclude the last two if you don't want to run the Discord bot. If you do, register one with [Discord's API](API) if you haven't already, and remember the token.
 
-If you want the Discord bot, you need a lil more:
+If you have Linux, just:
+```
+cd path/to/place/bot
+git clone https://github.com/yunruse/mnac
+cd mnac
+echo "token from Discord API" > config/token.txt
+python3 discord_bot.py
 
-`pip install numpy Pillow discord.py toml`
+# do this if Linux gives you numpy errors
+pip3 uninstall numpy
+apt-get install python3-numpy
+```
+Otherwise:
 
-Then, simply:
+1. [Download] and extract to the folder you want,
+2. Create `config.token.txt` with the token,
+3. Run `discord_bot.py`.
 
-1. [Create a Discord bot](API), and place the token inside of `config/tokens.txt`.
-2. Rename `config_sample.toml` to `config.toml`, and modify settings as you please.
-3. Start the bot, and invite it to your server(s).
-4. To save time and processing power, the bot caches the URL of each render of the game, and stores them in a channel to avoid users deleting the cache. Create a private channel, disable notifications on it, and register the admin and cache channel by running `mnac/cache here`.
-5. Run `mnac/cache` before shutting down to save config and cache.
+#### Configuring the bot before use
+
+To save time and processing power, the bot caches the URL of each render of the game, and stores them in a channel to avoid users deleting the cache. Create a private channel in a server you control, disable notifications on it, invite the bot with the link it shows you on startup, and register the admin and cache channel by running `mnac/cache here`.
+
+Check out `setup/config.toml` for a few settings. Restart the bot if you change them - run `mnac/cache` to save, but the bot will automatically save every few minutes.
 
 ## Update log
 - 1.0: Initial release.
