@@ -120,10 +120,10 @@ allowMiddle: Allow darn cheaters to take the middle grid first thing
 help_play = "Ye can play in grid or cell N by doing either [>play N<] or just `N`."
 
 
-cache_here = "Okay, dumping cache here. Don't delete messages or the cache file or it will result in errors - instead run [>cache purge<] to delete them all and restart the cache."
-cache_purged = "Okay, deleted all cache."
-cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
-cache_saved = "Okay, saved settings and cache to file."
+cache_here = "Yarr, saving treasure here. Delete no messages or config files, matey! Tell me [>cache purge<] and I'll dump the teasure"
+cache_purged = "Yarr, thrown treasure overboard."
+cache_not_found = "**I CAN'T FIND THE CACHE CHANNEL!** Davy Jones has taken all me treasure. Tell ye captain to run [>cache here<] in a private channel."
+cache_saved = "Yarr, saved settings and cache to file."
 shutdown = "Yarr, switchin' off in 10 seconds."
 
 
