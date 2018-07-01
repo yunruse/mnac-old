@@ -37,22 +37,19 @@ class AsciiMNAC(mnac.MNAC):
         crosses = CROSSES if c else ''
         taken = self.gridStatus[index]
         if taken == 1:
-            return noughts + '\\ /\n X \n/ \\'
+            return [noughts + '/-\\', '| |', '\\-/']
         elif taken == 2:
-            return crosses + '/-\\\n| |\n\\-/'
-
-    
+            return [crosses + '\\ /', ' x ', '/ \\']
+        
         symbols = [
             {1: (noughts + 'x'), 2: (crosses + 'o')}.get(cell) or (normal + '.')
             for n, cell in enumerate(self.grids[index])]
         selector = (
             '   ' if self.noMiddleStart and self.state == 'begin' and index == 4 else
             normal + ('[{}]' if self.grid == index else ' {} ').format(mnac.numpad(index + 1)))
-        print(symbols)
-        return [''.join(symbols[0:3]), ''.join(symbols[4:7]), ''.join(symbols[6:9]), selector]
+        return [''.join(symbols[0:3]), ''.join(symbols[3:6]), ''.join(symbols[6:9]), selector]
 
     def __repr__(self, showColors=False):
-        print(self.grids)
         rows = []
         for row in range(3):
             # transpose
@@ -71,7 +68,7 @@ class AsciiMNAC(mnac.MNAC):
         elif self.state == 'inner':
             return 'Take a cell'
         else:
-            return 'Send your opponent to'  
+            return 'Send your opponent to'
 
     def _loop(self, showColors=False):
         self._last_error = ''
@@ -84,15 +81,15 @@ class AsciiMNAC(mnac.MNAC):
             # printing with colour
             
             error = '{}[ {} ]{}'.format(
-                ERROR, self._last_error, colourify()) if self._last_error else ''
-            
+                ERROR, mnac.ERRORS[self._last_error], colourify()) if self._last_error else ''
+            self._last_error = ''
             print('{}Meta Noughts and Crosses\n\n{}\n\n{}'.format(
                     INFO, self.__repr__(showColors), error))
             
             if self.winner:
                 print('GAME OVER! {}!'.format(
                     ['Noughts wins', 'Crosses wins', "It's a draw"][self.winner-1]))
-                sys.exit(self.winner)            
+                sys.exit(self.winner)
             
             prompt = ('{}{}{}: {}... > '.format(
                 NOUGHTS + 'Noughts' if self.player == 1 else CROSSES + 'Crosses', NORMAL,
@@ -110,8 +107,7 @@ class AsciiMNAC(mnac.MNAC):
                 self._last_error = 'Invalid argument {!r}'.format(inp)
                 continue
             try:
-                print(index)
-                self.play(index)
+                self.play(index + 1)
             except mnac.MoveError as e:
                 self._last_error = e.args[0]
                 continue
