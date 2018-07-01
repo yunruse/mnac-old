@@ -126,7 +126,7 @@ cache_saved = "Okay, saved settings and cache to file."
 
 
 [de]
-Language = "Deutch (du)"
+Language = "Deutsch (du)"
 language_changed = "Sprach wurde geändert. Guten Tag!"
 language_help = "Du sprachst Deutsch, nein? Tu [>lang code<], um der Sprach dieser Kannel zu wählen."
 command_unknown = "Ich weiß keine Kommand, die {command!r} heißt."
@@ -173,16 +173,3 @@ stop:           halt eine Spiel an
 random:         lass Schicksal deinen Zug entschieden
 lang:           Sprach ändern
 ```"""
-
-help_start = """\
-Running [>start<] opens a temporary lobby, where the second player can join. The first player can set house rules by including these options in the [>start <options><] command: ```
-solo: Single-user (local play)
-allowMiddle: allow starting in the middle grid
-```"""
-
-help_play = "You can play in grid or cell N by doing either [>play N<] or just `N`."
-
-cache_here = "Okay, dumping cache here. Don't delete messages or the cache file or it will result in errors - instead run [>cache purge<] to delete them all and restart the cache."
-cache_purged = "Okay, deleted all cache."
-cache_not_found = "**CACHE CHANNEL NOT FOUND!** There is nowhere for me to cache the images in, so I can't actually send you any images. Tell whoever is running this bot instance to run [>cache here<] in a private channel."
-cache_saved = "Okay, saved settings and cache to file."

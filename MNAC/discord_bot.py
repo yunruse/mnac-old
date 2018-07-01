@@ -162,7 +162,12 @@ async def respond(msg, chan, user, **kwargs):
     lang, game = config(chan)
 
     if msg in lang:
-        msg = lang[msg].format(**kwargs)
+        msg = lang[msg]
+    else:
+        printf('Cannot find {!r} for language {!r}'.format(msg, lang['Language']))
+        msg = LANGUAGES[CONFIG['default_language']][msg]
+    
+    msg = msg.format(**kwargs)
     
     # Determine user identifiers
     m_user = mention(user)
