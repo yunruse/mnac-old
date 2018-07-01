@@ -32,6 +32,8 @@ cd path/to/place/bot
 git clone https://github.com/yunruse/mnac
 cd mnac
 echo "token from Discord API" > config/token.txt
+cp config/config_sample.toml config/config.toml
+nano config/config.toml
 python3 discord_bot.py
 
 # do this if Linux gives you numpy errors
@@ -41,14 +43,15 @@ apt-get install python3-numpy
 Otherwise:
 
 1. [Download] and extract to the folder you want,
-2. Create `config.token.txt` with the token,
-3. Run `discord_bot.py`.
+2. Create `config/token.txt` with the token,
+3. Copy `config/config_sample.toml` to `config/config.toml` and edit as you see fit,
+4. Run `discord_bot.py`.
 
 #### Configuring the bot before use
 
-To save time and processing power, the bot caches the URL of each render of the game, and stores them in a channel to avoid users deleting the cache. Create a private channel in a server you control, disable notifications on it, invite the bot with the link it shows you on startup, and register the admin and cache channel by running `mnac/cache here`.
+To save time and processing power, the bot caches the URL of each render of the game, and stores them in a channel to avoid users deleting the cache. Create a private channel in a server you control, disable notifications on it, invite the bot with the link it shows you on startup, and register yourself as admin and that channel as cache channel by running `mnac/cache here`. From then on only you will be able to run `mnac/cache`. Delete the relevant lines in `config.toml` to undo that.
 
-Check out `setup/config.toml` for a few settings. Restart the bot if you change them - run `mnac/cache` to save, but the bot will automatically save every few minutes.
+The bot will save data every few minutes. Run `mnac/cache purge` to clear cache or `mnac/help` for all non-admin commands.
 
 ## Update log
 - 1.0: Initial release.
