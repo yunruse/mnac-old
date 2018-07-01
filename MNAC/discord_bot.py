@@ -25,8 +25,8 @@ PATH_CONFIG = '../config/config.toml'
 PATH_CACHE = '../config/image_cache.toml'
 
 #                   __
-# |\   /|\  |  /\  /    
-# | \ / | \ | /__\/ 
+# |\   /|\  |  /\  /
+# | \ / | \ | /__\/
 # |  v  |  \|/    \
 # |     |   V      \__
 # M E T A   N O U G H T S   A N D   C R O S S E S
@@ -505,7 +505,7 @@ async def on_message(message):
 
 
 with open(PATH_TOKEN, encoding='utf8') as f:
-    TOKEN = f.read(-1)
+    TOKEN = f.read(-1).strip()
 
 if __name__ == '__main__':
     printf('Bot spinning up...')
