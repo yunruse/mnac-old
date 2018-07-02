@@ -60,3 +60,14 @@ The bot will save data every few minutes. Run `mnac/cache purge` to clear cache 
 [license]: license.txt
 [download]: https://github.com/yunruse/MNAC/archive/master.zip
 [API]: https://discordapp.com/developers/applications/me
+
+## Legal
+
+Copyright (c) Jack Dobson (yunru.se) 2018.
+
+This work is licensed under a Creative Commons Attribution 4.0 International
+license. In non-legal terms: do whatever you like, but credit me.
+
+The full license is available here:
+https://creativecommons.org/licenses/by/4.0/
+
