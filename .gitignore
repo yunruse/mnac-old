@@ -110,3 +110,4 @@ config/servers.json
 config/image_cache.toml
 config/servers.toml
 config/config.toml
+MNAC/test_image.png
