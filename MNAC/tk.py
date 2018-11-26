@@ -19,12 +19,6 @@ import render
 
 TITLE = 'TkMNAC v1.3dev / yunru.se'
 
-CROSS = np.array([
-    (0, 0), (1, 0), (4.5, 3.5), (8, 0), (9, 0),
-            (9, 1), (5.5, 4.5), (9, 8), (9, 9),
-            (8, 9), (4.5, 5.5), (1, 9), (0, 9),
-            (0, 8), (3.5, 4.5), (0, 1), (0, 0)]) / 9
-
 MOUSE = np.array([
     ( 8,  0), ( 8, 28), (14, 22), (18, 32),
     (23, 30), (19, 19), (27, 20), ( 8,  0)
@@ -41,37 +35,40 @@ class CanvasRender(render.Render):
 
     font = 'Segoe UI'
 
-    def __init__(self, app):
+    def __init__(self, app, theme='light'):
         self.app = app
         self.canvas = app.canvas
         self.coordinates = {}
+        self.theme = render.THEMES[theme]
+        self.error = False
 
     def draw(self):
         self.game = self.app.game
         self.error = self.app.error
-        # determine colours and status
         
-        P = lambda p: (('Noughts', render.NOUGHTMAIN) if p == 1 else ('Crosses', render.CROSSMAIN))
-        player, bg = P(self.game.player)
-        titlefill = render.NOUGHTLIGHT if player == 'Noughts' else render.CROSSLIGHT
+        # determine colours and status
+        players = [
+            ('gray', 'Unknown error', 'Unknown error'),
+            ('nought', 'Noughts', 'Noughts wins!'),
+            ('cross', 'Crosses', 'Crosses wins!'),
+            ('gray', 'Neutral', "It's a draw...")
+        ]
+
+        code, name, _ = players[self.game.player]
+
+        titlefill = self.theme[code]['light']
         
         if self.error:
             text = self.error
-            bg = render.NOUGHTDARK if player == 'Noughts' else render.CROSSDARK
-        elif self.game.winner == 3:
-            text = "It's a draw..."
-            bg = 'gray'
         elif self.game.winner:
-            text, bg = P(self.game.winner)
-            text = '{} wins!'.format(text)
+            text = players[self.game.winner][2]
         else:
-            if self.game.state == 'begin':
-                status = 'grid to start in'
-            elif self.game.state == 'inner':
-                status = 'cell to play in'
-            else:
-                status = 'grid to send to'
-            text = '{}, pick a {}'.format(player, status)
+            statuses = {
+                'begin': 'grid to start in',
+                'inner': 'cell to play in',
+                'outer': 'grid to send to',
+            }
+            text = '{}, pick a {}'.format(name, statuses[self.game.state])
 
         
         # get canvas details
@@ -83,7 +80,7 @@ class CanvasRender(render.Render):
         else:
             self.topleft += (0, (h - w) / 2)
     
-        self.canvas.config(bg=bg)
+        self.canvas.config(bg=self.background())
         self.canvas.delete('status', 'backing', 'mark', 'play')
         self.canvas.tag_unbind('backing', '<Button-1>')
 
@@ -115,7 +112,7 @@ class CanvasRender(render.Render):
 
         if self.app.keyboardMayPlay:
             draw_glyph(-1, KEYBOARD_OUTER, titlefill)
-            draw_glyph(-1, KEYBOARD_INNER, bg)
+            draw_glyph(-1, KEYBOARD_INNER, self.background())
             header(self.topleft[0] + self.size - glyph_size / 2, anchor='center', text='A')
 
         render.Render.draw(self)
