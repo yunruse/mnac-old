@@ -63,7 +63,7 @@ The bot will save data every few minutes. Run `mnac/cache purge` to clear cache 
 
 ## Legal
 
-Copyright (c) Jack Dobson (yunru.se) 2018.
+Copyright (c) Mia yun Ruse (yunru.se) 2019.
 
 This work is licensed under a Creative Commons Attribution 4.0 International
 license. In non-legal terms: do whatever you like, but credit me.
