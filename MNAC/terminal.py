@@ -14,21 +14,25 @@ COLOURS = {
     'normal': 0,  'gray': 30, 'red': 31,     'green': 32,
     'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36,  'white': 37
 }
+
+
 def colourify(name='normal', bright=None):
-    #if os.name == 'nt':
+    # if os.name == 'nt':
     #    return ''
     name = name.lower()
     if 'dark' in name:
         bright = False
     elif bright is None:
         bright = True
-    return '\033[{};{}m'.format(COLOURS.get(name.replace(' ','').replace('dark',''), 0), int(bright))
+    return '\033[{};{}m'.format(COLOURS.get(name.replace(' ', '').replace('dark', ''), 0), int(bright))
+
 
 NOUGHTS = colourify('yellow')
 CROSSES = colourify('cyan')
 INFO = colourify('green')
 ERROR = colourify('red')
 NORMAL = colourify()
+
 
 class AsciiMNAC(mnac.MNAC):
     def _grid(self, index, c=False):
@@ -40,7 +44,7 @@ class AsciiMNAC(mnac.MNAC):
             return [noughts + '/-\\', '| |', '\\-/']
         elif taken == 2:
             return [crosses + '\\ /', ' x ', '/ \\']
-        
+
         symbols = [
             {1: (noughts + 'x'), 2: (crosses + 'o')}.get(cell) or (normal + '.')
             for n, cell in enumerate(self.grids[index])]
@@ -53,11 +57,12 @@ class AsciiMNAC(mnac.MNAC):
         rows = []
         for row in range(3):
             # transpose
-            chars = zip(*(self._grid(row * 3 + col, showColors) for col in range(3)))
+            chars = zip(*(self._grid(row * 3 + col, showColors)
+                        for col in range(3)))
             rows.append('\n'.join(map(' '.join, chars)))
 
         return '\n\n'.join(rows)
-    
+
     def onPlace(self, _, index):
         pass
 
@@ -74,34 +79,36 @@ class AsciiMNAC(mnac.MNAC):
         self._last_error = ''
         if os.name == 'nt':
             os.system('title Meta Noughts and Crosses')
-            
+
         while True:
             os.system('cls' if os.name == 'nt' else 'clear')
 
             # printing with colour
-            
+
             error = '{}[ {} ]{}'.format(
                 ERROR, mnac.ERRORS[self._last_error], colourify()) if self._last_error else ''
             self._last_error = ''
             print('{}Meta Noughts and Crosses\n\n{}\n\n{}'.format(
-                    INFO, self.__repr__(showColors), error))
-            
+                INFO, self.__repr__(showColors), error))
+
             if self.winner:
                 print('GAME OVER! {}!'.format(
                     ['Noughts wins', 'Crosses wins', "It's a draw"][self.winner-1]))
                 sys.exit(self.winner)
-            
+
             prompt = ('{}{}{}: {}... > '.format(
                 NOUGHTS + 'Noughts' if self.player == 1 else CROSSES + 'Crosses', NORMAL,
-                ' in {} grid'.format(mnac.DIRECTIONS[self.grid][1]) if self.grid is not None else '',
+                ' in {} grid'.format(
+                    mnac.DIRECTIONS[self.grid][1]) if self.grid is not None else '',
                 self.action))
 
-            inp = input(prompt).lower().strip().replace(' ', '').replace('-', '')
+            inp = input(prompt).lower().strip().replace(
+                ' ', '').replace('-', '')
             if 'exit' in inp or inp == 'q':
                 sys.exit(0)
             elif not inp:
                 continue
-            
+
             index = mnac.getIndex(inp)
             if index is None:
                 self._last_error = 'Invalid argument {!r}'.format(inp)
@@ -119,7 +126,9 @@ class AsciiMNAC(mnac.MNAC):
         except KeyboardInterrupt:
             sys.exit(0)
 
-parser = argparse.ArgumentParser(description='AsciiMNAC, a terminal-enabled Meta Noughts and Crosses.')
+
+parser = argparse.ArgumentParser(
+    description='AsciiMNAC, a terminal-enabled Meta Noughts and Crosses.')
 
 parser.add_argument('moves', nargs='*',
                     help='(Space-separated) string of numerical moves to play.')

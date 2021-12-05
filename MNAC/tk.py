@@ -7,8 +7,6 @@ Requires Python >3.6, tkinter and mnac.
 1.3: automatic keyboard/mouse selector, better mouse handling
 '''
 
-print(**{},end='') # If this line fails, you probably don't have Python 3.6
-
 import random
 
 import tkinter as tk
@@ -20,8 +18,8 @@ import render
 TITLE = 'TkMNAC v1.3dev / yunru.se'
 
 MOUSE = np.array([
-    ( 8,  0), ( 8, 28), (14, 22), (18, 32),
-    (23, 30), (19, 19), (27, 20), ( 8,  0)
+    (8,  0), (8, 28), (14, 22), (18, 32),
+    (23, 30), (19, 19), (27, 20), (8,  0)
 ]) / 32
 KEYBOARD_OUTER = np.array([
     (4, 2), (28, 2), (30, 4), (30, 28), (28, 30), (4, 30), (2, 28), (2, 4), (4, 2),
@@ -29,6 +27,7 @@ KEYBOARD_OUTER = np.array([
 KEYBOARD_INNER = np.array([
     (7, 5), (25, 5), (27, 7), (27, 25), (25, 27), (7, 27), (5, 25), (5, 7), (7, 5),
 ]) / 32
+
 
 class CanvasRender(render.Render):
     '''Tkinter Canvas-based renderer.'''
@@ -45,7 +44,7 @@ class CanvasRender(render.Render):
     def draw(self):
         self.game = self.app.game
         self.error = self.app.error
-        
+
         # determine colours and status
         players = [
             ('gray', 'Unknown error', 'Unknown error'),
@@ -57,7 +56,7 @@ class CanvasRender(render.Render):
         code, name, _ = players[self.game.player]
 
         titlefill = self.theme[code]['light']
-        
+
         if self.error:
             text = self.error
         elif self.game.winner:
@@ -70,16 +69,15 @@ class CanvasRender(render.Render):
             }
             text = '{}, pick a {}'.format(name, statuses[self.game.state])
 
-        
         # get canvas details
 
         w, h, self.size, self.topleft, header_height = self.app.coordinate()
-        
+
         if w > h:
             self.topleft += ((w - h) / 2, 0)
         else:
             self.topleft += (0, (h - w) / 2)
-    
+
         self.canvas.config(bg=self.background())
         self.canvas.delete('status', 'backing', 'mark', 'play')
         self.canvas.tag_unbind('backing', '<Button-1>')
@@ -91,32 +89,33 @@ class CanvasRender(render.Render):
         if self.app.showHelp:
             text = ''
             leftText = 'tab: back to game'
-        
+
         header = (
             lambda x, y=header_height / 2, fill=titlefill, **kw:
             self.canvas.create_text(
                 x, y, fill=fill,
                 tags='status', font=(self.font, font_size), **kw))
-        
+
         header(self.topleft[0] + 5,           anchor='w', text=leftText)
         header(self.topleft[0] + self.size/2, anchor='center', text=text)
 
-        draw_glyph = lambda fromRight, glyph, fill: self.canvas.create_polygon(
-            *(  glyph * glyph_size + (
-                    self.topleft[0] + self.size + fromRight * glyph_size,
-                    (header_height - glyph_size) / 2 + 2)).flatten(),
+        def draw_glyph(fromRight, glyph, fill): return self.canvas.create_polygon(
+            *(glyph * glyph_size + (
+                self.topleft[0] + self.size + fromRight * glyph_size,
+                (header_height - glyph_size) / 2 + 2)).flatten(),
             width=0, fill=fill, tags='status')
-        
+
         if self.app.mouseMayPlay:
-            draw_glyph(-2, MOUSE, titlefill) 
+            draw_glyph(-2, MOUSE, titlefill)
 
         if self.app.keyboardMayPlay:
             draw_glyph(-1, KEYBOARD_OUTER, titlefill)
             draw_glyph(-1, KEYBOARD_INNER, self.background())
-            header(self.topleft[0] + self.size - glyph_size / 2, anchor='center', text='A')
+            header(self.topleft[0] + self.size -
+                   glyph_size / 2, anchor='center', text='A')
 
         render.Render.draw(self)
-    
+
         # draw beginning help in middle cell
 
         if self.app.showHelp:
@@ -144,9 +143,9 @@ class CanvasRender(render.Render):
                 'Control-P: Change which players are controlled by',
                 'keyboard and mouse (indicated by the top right icons)',
                 'Keys 1-9 and mouse/touch:  Play in cell / grid'
-                ), start=1):
-                header(w/2, self.topleft[1] + i * 1.5 * font_size, fill='black', text=text)
-        
+            ), start=1):
+                header(w/2, self.topleft[1] + i * 1.5 *
+                       font_size, fill='black', text=text)
 
     def cell(self, grid, cell, tl, size, fill):
         tl += self.topleft
@@ -173,51 +172,52 @@ class CanvasRender(render.Render):
         self.canvas.create_text(
             *coords, text=text, fill=fill, font=(self.font, size), anchor='nw', tags='play')
 
+
 class UIMNAC(tk.Tk):
     def __init__(self, **kwargs):
         '''Initialise frame. Set players to None or a number.'''
 
         # None (both input kinds) or 1 or 2
         self._keyboardPlayer = kwargs.get('keyboardPlayer', None)
-        
+
         tk.Tk.__init__(self)
         self.title(TITLE)
         self.minsize(400, 424)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(1, weight=1)
-        
+
         self.canvas = tk.Canvas(
             self, height=0, width=0,
             bd=0, highlightthickness=0, relief='ridge')
         self.canvas.grid(row=1, column=1, columnspan=3, sticky='news')
 
         self.render = CanvasRender(self)
-        
+
         self.bind_all('<Configure>', self.redraw)
         self.bind_all('<Control-p>', self.changePlayer)
         self.bind_all('<Control-r>', self.restart)
         self.bind_all('<Tab>', self.toggleHelp)
         self.bind_all('<Escape>', self.clearError)
         self.canvas.bind('<Button-1>', self.onClick)
-        
-        callbacker = lambda i: lambda *event: self.onKey(i)
+
+        def callbacker(i): return lambda *event: self.onKey(i)
         for i in range(1, 10):
             self.bind_all(str(i), callbacker(i))
         self.restart()
-    
+
     def restart(self, *event):
         self.showHelp = False
         self.error = ''
-        
+
         self.game = mnac.MNAC(noMiddleStart=True)
         self.redraw()
-    
+
     keyboardMayPlay = property(lambda s: not s.showHelp and (
         s._keyboardPlayer is None or s._keyboardPlayer == s.game.player))
 
     mouseMayPlay = property(lambda s: not s.showHelp and (
         s._keyboardPlayer is None or s._keyboardPlayer != s.game.player))
-     
+
     def changePlayer(self, *event):
         '''Called on ctrl-P or clicking the player icon.'''
         k = self._keyboardPlayer
@@ -248,11 +248,11 @@ class UIMNAC(tk.Tk):
 
     def redraw(self, *event):
         self.render.draw()
-    
+
     def onClick(self, event):
         w, h, s, tl, header_height = self.coordinate()
         x = (event.x - tl[0]) * 9 / s
-        
+
         if (0 < event.y < header_height) and (0 < x < 9):
             # status bar click
             if x < 2 or self.showHelp:
@@ -271,7 +271,7 @@ class UIMNAC(tk.Tk):
                 break
         else:
             return
-        
+
         if self.game.winner:
             return self.restart()
 
@@ -287,7 +287,7 @@ class UIMNAC(tk.Tk):
     def onKey(self, index):
         if self.game.winner:
             return self.restart()
-        
+
         if self.keyboardMayPlay:
             self.play(mnac.numpad(index))
 
@@ -313,10 +313,10 @@ class UIMNAC(tk.Tk):
                 continue
 
         self.render.draw()
-        
+
         if not self.game.winner:
             self.after(500, self.test_turn)
-        
+
 
 if __name__ == '__main__':
     self = UIMNAC()

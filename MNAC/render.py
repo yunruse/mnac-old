@@ -21,7 +21,7 @@ with open('theme.less') as f:
         ('\{color:(#[a-zA-Z0-9]+)\}', r'"\1"')
     ):
         file = re.sub(a, b, file)
-    
+
     THEMES = literal_eval('{' + file + '}')
 
 CORNER = np.array([
@@ -30,9 +30,10 @@ CORNER = np.array([
 
 CROSS = np.array([
     (0, 0), (1, 0), (4.5, 3.5), (8, 0), (9, 0),
-            (9, 1), (5.5, 4.5), (9, 8), (9, 9),
-            (8, 9), (4.5, 5.5), (1, 9), (0, 9),
-            (0, 8), (3.5, 4.5), (0, 1), (0, 0)]) / 9
+    (9, 1), (5.5, 4.5), (9, 8), (9, 9),
+    (8, 9), (4.5, 5.5), (1, 9), (0, 9),
+    (0, 8), (3.5, 4.5), (0, 1), (0, 0)]) / 9
+
 
 class Render:
     def __init__(self, game, size=450, theme='dark'):
@@ -54,7 +55,7 @@ class Render:
             return self.theme[players[self.game.winner]]['main']
         else:
             return self.theme[players[self.game.player]]['dark' if self.error else 'main']
-    
+
     def draw(self):
         skipDraw = self.onStart()
         if skipDraw:
@@ -63,7 +64,7 @@ class Render:
         theme = self.theme
         game = self.game
         cell = self.size / (9 + 2 * self.SEPARATION)
-        
+
         for g in range(9):
             gxy = np.array((g % 3, g // 3))
             gridtl = gxy * cell * (3 + self.SEPARATION)
@@ -77,24 +78,25 @@ class Render:
                     xy = np.array((c % 3, c // 3))
                     celltl = gridtl + (xy * cell)
                     self.cell(g, c, celltl, cell, fill=color)
-            
+
                 # %% cell markers
                     cellStatus = game.grids[g][c]
                     xy = np.array((c % 3, c // 3))
                     celltl = gridtl + xy * cell
-                    wasLast = (game.lastPlacedGrid, game.lastPlacedCell) == (g, c)
+                    wasLast = (game.lastPlacedGrid,
+                               game.lastPlacedCell) == (g, c)
                     if cellStatus == 1:
                         color = theme['cross']['light' if wasLast else 'main']
                         top_left = celltl + cell / 18
                         bottom_right = celltl + cell - cell / 18
                         coords = np.array((*top_left, *bottom_right))
                         self.ellipse(coords, outline=color, width=cell/9)
-                    
+
                     elif cellStatus == 2:
                         coords = celltl + CROSS * cell
                         color = theme['nought']['light' if wasLast else 'main']
                         self.polygon(coords, fill=color)
-                    
+
                     elif game.grid == g and game.state == 'inner':
                         # keyboard selector for cell
                         canTeleport = (c == g or game.gridStatus[g] != 0)
@@ -103,15 +105,16 @@ class Render:
                             celltl + cell/2, isLarge=False, fill=textcol,
                             size=int(cell * 2/3), text=str(mnac.numpad(c + 1))
                         )
-            
+
             # %% grid markers - nought, cross
-            
+
             if gridStatus == 1:
                 top_left = gridtl + cell / 6
                 bottom_right = gridtl + cell * (3 - 1/6)
                 coords = np.array((*top_left, *bottom_right))
-                self.ellipse(coords, outline=theme['cross']['light'], width=cell/3)
-            
+                self.ellipse(
+                    coords, outline=theme['cross']['light'], width=cell/3)
+
             elif gridStatus == 2:
                 coords = gridtl + (CROSS * cell * 3)
                 self.polygon(coords, fill=theme['nought']['light'])
@@ -140,7 +143,7 @@ class Render:
         # corners, with x, y and reversing of corner coords
         for x, y, xr, yr in (
             (0, 0, 1,  1), (1, 0, -1,  1),
-            (0, 1, 1, -1), (1, 1, -1, -1)):
+                (0, 1, 1, -1), (1, 1, -1, -1)):
             rel = cell * 3 * np.array((x, y))
             size = cell * self.ROUNDING * np.array((xr, yr))
             for i in range(9):
@@ -153,7 +156,7 @@ class Render:
 
     def onStart(self):
         '''Callback before rendering starts.'''
-        
+
     def cell(self, grid, cell, tl, size, fill):
         '''Draw a cell backing.'''
 
@@ -170,15 +173,14 @@ class Render:
         '''Finalise and return complete render.'''
 
 
-
-
 class ImageRender(Render):
     '''Python Imaging Library-based image renderer.'''
 
     font = 'arial.ttf'
 
     def onStart(self):
-        self.image = Image.new('RGB', (self.size, self.size), color=self.background())
+        self.image = Image.new(
+            'RGB', (self.size, self.size), color=self.background())
         self.imdraw = ImageDraw.Draw(self.image)
 
     def cell(self, i, j, cell, size, fill):
@@ -196,7 +198,7 @@ class ImageRender(Render):
             left, top = [(value + offset) for value in bounds[:2]]
             right, bottom = [(value - offset-1) for value in bounds[2:]]
             draw.ellipse([left, top, right, bottom], fill=fill)
-        
+
         self.image.paste(outline, mask=mask)
 
     def polygon(self, coords, fill):
@@ -206,7 +208,7 @@ class ImageRender(Render):
         # fiddle factors for text coords
         fiddle = (1/3, -1/6) if isLarge else (-1/6, -1/3)
         coords += np.array(fiddle) * self.size / (9 + 2 * self.SEPARATION)
-        
+
         font = ImageFont.truetype(self.font, size)
         self.imdraw.text(coords, text=text, font=font, fill=fill)
 

@@ -19,7 +19,7 @@ PATH_LOG = '../config/log.txt'
 PATH_TOKEN = '../config/token.txt'
 
 # These can be .json or .toml
-PATH_LANGUAGES ='../config/languages.toml'
+PATH_LANGUAGES = '../config/languages.toml'
 PATH_SERVERS = '../config/servers.toml'
 PATH_CONFIG = '../config/config.toml'
 PATH_CACHE = '../config/image_cache.toml'
@@ -35,13 +35,16 @@ PATH_CACHE = '../config/image_cache.toml'
 
 bot = discord.Client()
 
+
 def printf(message, *args, **kwargs):
-    msg = '{:%Y-%m-%d %H:%M:%S}  '.format(datetime.datetime.now()) + message.format(*args, **kwargs)
+    msg = '{:%Y-%m-%d %H:%M:%S}  '.format(datetime.datetime.now()) + \
+        message.format(*args, **kwargs)
     if LOG_TO_STDOUT:
         print(msg)
     if PATH_LOG and os.path.isfile(PATH_LOG):
         with open(PATH_LOG, 'a', encoding='utf8') as f:
             f.write(msg + '\n')
+
 
 def _data_load(path, required=False):
     if path:
@@ -54,8 +57,9 @@ def _data_load(path, required=False):
         except FileNotFoundError:
             if required:
                 raise
-    
+
     return dict()
+
 
 printf('Loading configuration...')
 
@@ -76,8 +80,8 @@ CACHE_CHANNEL = None
 SERVERS = _data_load(PATH_SERVERS)
 # channel_id(s): {'language': lang_code, 'state': state}
 # where state is null or either:
-  # {'kind': 'lobby', 'noughts': str, 'time_started': int, otherconfig...}
-  # {'kind': 'game', ...}
+# {'kind': 'lobby', 'noughts': str, 'time_started': int, otherconfig...}
+# {'kind': 'game', ...}
 
 # deserialise lobbies
 # (actual games are deserialised when needed)
@@ -92,6 +96,8 @@ CACHE = _data_load(PATH_CACHE)
 # {gameMapping(s): image_url}
 
 CONF_DEFAULT = {'language': CONFIG['default_language'], 'state': None}
+
+
 def config(chan):
     conf = SERVERS.get(chan.id)
     if not conf:
@@ -107,6 +113,7 @@ def _data_save(path, data):
         elif path.endswith('.toml'):
             toml.dump(data, f)
 
+
 def save_servers():
     '''Called every move'''
     printf('Saving game state...')
@@ -119,17 +126,20 @@ def save_servers():
             state = copy.deepcopy(state)
             if isinstance(state, dict) and state['kind'] == 'lobby':
                 state['noughts'] = state['noughts'].id
-        
-        servers_serial[chan] = {'language': SERVERS[chan]['language'], 'state': state}
+
+        servers_serial[chan] = {
+            'language': SERVERS[chan]['language'], 'state': state}
     _data_save(PATH_SERVERS, servers_serial)
-            
+
+
 def save_data():
     '''Called infrequently'''
     printf('Saving config and cache...')
-        
+
     _data_save(PATH_CACHE, CACHE)
     _data_save(PATH_CONFIG, CONFIG)
     save_servers()
+
 
 async def save_clock():
     interval = CONFIG['save_interval']
@@ -142,21 +152,21 @@ async def save_clock():
 #
 
 
+def mention(user): return "<@{}>".format(user.id)
 
-
-mention = lambda user: "<@{}>".format(user.id)
 
 @bot.event
 async def on_ready():
     global CACHE_CHANNEL
     if CACHE_CHANNEL is None:
         CACHE_CHANNEL = bot.get_channel(str(CONFIG.get('cache_channel')))
-    
+
     printf('Welcome,        {0.user} ({0.user.id})', bot)
     printf('Server invite:  https://discordapp.com/oauth2/authorize?client_id={}&scope=bot',
-        bot.user.id)
+           bot.user.id)
     printf('Chat prefix:    {}', CONFIG['prefix'])
     printf('-'*20)
+
 
 async def respond(msg, chan, user, **kwargs):
     lang, game = config(chan)
@@ -164,11 +174,12 @@ async def respond(msg, chan, user, **kwargs):
     if msg in lang:
         msg = lang[msg]
     else:
-        printf('Cannot find {!r} for language {!r}'.format(msg, lang['Language']))
+        printf('Cannot find {!r} for language {!r}'.format(
+            msg, lang['Language']))
         msg = LANGUAGES[CONFIG['default_language']][msg]
-    
+
     msg = msg.format(**kwargs)
-    
+
     # Determine user identifiers
     m_user = mention(user)
     m_oppo = ''
@@ -178,24 +189,25 @@ async def respond(msg, chan, user, **kwargs):
             prefix = ''
             m_user, m_oppo = game._namePlayers()
         else:
-            m_oppo = mention(game.opponent)            
-    
+            m_oppo = mention(game.opponent)
+
     for a, b in (
         ('>user<', m_user),
         ('>opponent<', m_oppo),
         ('[>', '`' + CONFIG['prefix']),
-        ('<]', '`')):
+            ('<]', '`')):
         msg = msg.replace(a, b)
-    
+
     await bot.send_message(chan, msg)
 
 RENDER_PATH = '%smnac_{}.%s' % (
     os.path.expandvars('%temp%/' if os.name == 'nt' else '$tmpdir/'),
     CONFIG['render_file_format'])
 
+
 class DiscordMNAC(mnac.MNAC):
     '''Handles serialisation, user confusing and message sending'''
-    
+
     def __init__(self, channel, noughts, crosses, noMiddleStart=False):
         self.timeStarted = time.time()
         self.channel = channel
@@ -207,7 +219,8 @@ class DiscordMNAC(mnac.MNAC):
     def __repr__(self):
         return '<Discord MNAC ({}, {})>'.format(self.noughts, self.crosses)
 
-    current_user = property(lambda s: s.noughts if s.player == 1 else s.crosses)
+    current_user = property(
+        lambda s: s.noughts if s.player == 1 else s.crosses)
     opponent = property(lambda s: s.noughts if s.player == 2 else s.crosses)
     users = property(lambda s: (s.noughts, s.crosses))
     is_solo = property(lambda s: s.noughts == s.crosses)
@@ -221,7 +234,7 @@ class DiscordMNAC(mnac.MNAC):
         lang, _ = config(self.channel)
         users = lang['noughts'], lang['crosses']
         return users[::-1] if self.player == 2 else users
-    
+
     async def show(self):
         await bot.send_typing(self.channel)
         if self.winner:
@@ -236,20 +249,21 @@ class DiscordMNAC(mnac.MNAC):
 
             if CACHE_CHANNEL is None:
                 return await respond('cache_not_found', self.channel, self.current_user)
-            
+
             embed = discord.Embed()
             player, other = self._namePlayers()
             lang, _ = config(self.channel)
             status = lang[self.state].format(player=player, other=other)
-            icon_url = CONFIG.get(['noughts_icon', 'crosses_icon'][self.player == 2])
+            icon_url = CONFIG.get(
+                ['noughts_icon', 'crosses_icon'][self.player == 2])
             embed.set_footer(text=status, icon_url=icon_url)
 
             # equal hash(game) <-> equal render
             game_hash = str(hash(self))
-            
+
             # messageID, imageID
             imageIDs = CACHE.get(game_hash)
-            
+
             if imageIDs:
                 link = 'https://cdn.discordapp.com/attachments/{}/{}/mnac_{}.png'.format(
                     CACHE_CHANNEL.id, imageIDs[1], game_hash)
@@ -257,38 +271,37 @@ class DiscordMNAC(mnac.MNAC):
                 # render game and send to the cache channel
                 file_path = RENDER_PATH.format(game_hash)
                 self.render.draw().save(file_path)
-                
+
                 message = await bot.send_file(CACHE_CHANNEL, file_path)
                 link = message.attachments[0]['url']
                 CACHE[game_hash] = [int(message.id), int(link.split('/')[-2])]
                 try:
                     os.remove(file_path)
                 except FileNotFoundError:
-                    pass # This sometimes happens if a lot of new renders happen
+                    pass  # This sometimes happens if a lot of new renders happen
 
-            
             embed.set_image(url=link)
             return await bot.send_message(self.channel, embed=embed)
-    
+
     # Serialisation to dict (Discord items store as IDs)
-    
+
     _NoneSerial = 'lastPlacedGrid lastPlacedCell'.split()
     _directSerial = 'noMiddleStart player grid grids state'.split()
     _idSerial = 'noughts crosses'.split()
-    
+
     @classmethod
     async def fromSerial(cls, channel, config):
         game = cls(channel,
-            noughts=await bot.get_user_info(config.pop('noughts')),
-            crosses=await bot.get_user_info(config.pop('crosses')),
-        )
+                   noughts=await bot.get_user_info(config.pop('noughts')),
+                   crosses=await bot.get_user_info(config.pop('crosses')),
+                   )
         for i in cls._NoneSerial:
             setattr(game, i, config.get(i, None))
         for i in cls._directSerial:
             setattr(game, i, config.get(i, None))
         game.check()
         return game
-        
+
     def toSerial(self):
         serial = {'kind': 'game'}
         for i in self._NoneSerial:
@@ -300,14 +313,13 @@ class DiscordMNAC(mnac.MNAC):
         return serial
 
 
-
 #
 # %% Message handling
 #
 
 
-
 COMMANDS = 'help tutorial status start stop play random lang cache shutdown'.split()
+
 
 @bot.event
 async def on_message(message):
@@ -321,7 +333,7 @@ async def on_message(message):
 
     async def r(m, **k):
         await respond(m, chan, user, **k)
-    
+
     # Game variables
     game = config(chan)[1]
     mode = 'chat'
@@ -335,33 +347,34 @@ async def on_message(message):
     if isinstance(game, dict) and game['kind'] == 'game':
         game = await DiscordMNAC.fromSerial(chan, game)
         SERVERS[chan.id]['state'] = game
-    
+
     if isinstance(game, DiscordMNAC):
         mode = 'game'
         if game.has_expired:
             game = set_game(None)
             mode = 'chat'
-        
+
     elif isinstance(game, dict):
         # Lobby - purge if reached limit
         mode = 'lobby'
-        lobby_seconds_left = CONFIG['max_lobby_time'] - (now - game['time_started'])
+        lobby_seconds_left = CONFIG['max_lobby_time'] - \
+            (now - game['time_started'])
         if lobby_seconds_left < 0:
             game = set_game(None)
             mode = 'chat'
-    
+
     if mode == 'game' and user in game.users and isinstance(mnac.getIndex(content), int):
         # players can skip the whole '/play' malarkey
         args = content.split()
         command = 'play'
-    
+
     elif content.startswith(CONFIG['prefix']):
         # standard prefixed response
         args = content[len(CONFIG['prefix']):].split()
         if not args:
             return
         command = args.pop(0)
-        
+
     elif chan.is_private:
         # private games can go prefixless
         args = content.split()
@@ -377,11 +390,11 @@ async def on_message(message):
         subcommand = None
 
     if command in COMMANDS:
-        printf('{:<20} {:<5} {:<10} : {}({})', chan.id, mode, user.name, command, ', '.join(args))
+        printf('{:<20} {:<5} {:<10} : {}({})', chan.id,
+               mode, user.name, command, ', '.join(args))
     else:
         return await r('command_unknown', command=command)
 
-    
     if 'admin' not in CONFIG:
         CONFIG['admin'] = int(user.id)
         isAdmin = True
@@ -391,11 +404,11 @@ async def on_message(message):
     if command == 'help':
         # list off commands
         doc = 'help'
-        
+
         for sub in 'start play'.split():
             if subcommand == sub:
                 doc += '_' + sub
-        
+
         await r(doc)
 
     elif command == 'status':
@@ -413,23 +426,25 @@ async def on_message(message):
 
         # print list of languages
         await r('language_help')
-        langs = '\n'.join('{:<10} {}'.format(s, LANGUAGES[s]['Language']) for s in LANGUAGES)
+        langs = '\n'.join('{:<10} {}'.format(
+            s, LANGUAGES[s]['Language']) for s in LANGUAGES)
         return await r(langs)
-    
+
     elif command == 'start':
         # Lobbies can be held but also skipped, so we get arguments and THEN apply them
         noughts = None
         noMiddleStart = 'allowMiddle' not in args
-        
+
         isSolo = chan.is_private or ('practice' in args or 'solo' in args)
         if game is None and isSolo:
             noughts = user
         elif mode == 'lobby':
             noughts = game.get('noughts')
             noMiddleStart = game.get('noMiddleStart', True)
-        
+
         if noughts:
-            game = DiscordMNAC(message.channel, noughts, user, noMiddleStart=noMiddleStart)
+            game = DiscordMNAC(message.channel, noughts,
+                               user, noMiddleStart=noMiddleStart)
             set_game(game)
             await r('start_game_started', noughts=mention(noughts))
             await game.show()
@@ -440,7 +455,7 @@ async def on_message(message):
                 await game.show()
             else:
                 await r('start_alreadyrunning_nonplayer')
-        
+
         if game is None:
             # start lobby
             lobby = {'kind': 'lobby', 'noughts': user,
@@ -485,7 +500,7 @@ async def on_message(message):
                     continue
             else:
                 await r('play_unknown_error')
-        
+
     elif isAdmin and command == 'cache':
         global CACHE_CHANNEL
         global CACHE
@@ -494,7 +509,7 @@ async def on_message(message):
             CACHE_CHANNEL = chan
             CONFIG['cache_channel'] = int(chan.id)
             await r('cache_here')
-        
+
         elif subcommand == 'purge':
             for h in CACHE:
                 messageID, imageID = CACHE[h]
@@ -502,9 +517,9 @@ async def on_message(message):
                 if message:
                     bot.delete_message(message)
             with open(PATH_CACHE, 'w') as f:
-                pass # clears cache file
+                pass  # clears cache file
             await r('cache_purged')
-        
+
         else:
             await r('cache_saved')
 
@@ -513,7 +528,7 @@ async def on_message(message):
     elif isAdmin and command == 'shutdown':
         await r('shutdown')
         await asyncio.sleep(10)
-        await bot.logout()    
+        await bot.logout()
 
 
 with open(PATH_TOKEN, encoding='utf8') as f:
@@ -525,7 +540,8 @@ if __name__ == '__main__':
     try:
         bot.run(TOKEN)
     except Exception as e:
-        printf('Exception {}: {}', type(e).__name__, ' '.join(map(str,e.args)))
-    
+        printf('Exception {}: {}', type(e).__name__,
+               ' '.join(map(str, e.args)))
+
     printf('Bot turning off...')
     save_data()
