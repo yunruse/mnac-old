@@ -11,8 +11,15 @@ import mnac
 
 COLOURS = {
     # for more: man console_codes [under ECMA-48 Set Graphics Rendition]
-    'normal': 0,  'gray': 30, 'red': 31,     'green': 32,
-    'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36,  'white': 37
+    'normal': 0,
+    'gray': 30,
+    'red': 31,
+    'green': 32,
+    'yellow': 33,
+    'blue': 34,
+    'magenta': 35,
+    'cyan': 36,
+    'white': 37
 }
 
 
@@ -21,14 +28,14 @@ def colourify(name='normal', bright=None):
     #    return ''
     name = name.lower()
     if 'dark' in name:
-        bright = False
+        bright = 0
     elif bright is None:
-        bright = True
-    return '\033[{};{}m'.format(COLOURS.get(name.replace(' ', '').replace('dark', ''), 0), int(bright))
+        bright = 1
+    return '\033[{};{}m'.format(COLOURS.get(name.replace(' ', '').replace('dark', ''), 0), bright)
 
 
-NOUGHTS = colourify('yellow')
-CROSSES = colourify('cyan')
+NOUGHTS = colourify('cyan')
+CROSSES = colourify('red')
 INFO = colourify('green')
 ERROR = colourify('red')
 NORMAL = colourify()
@@ -130,14 +137,12 @@ class AsciiMNAC(mnac.MNAC):
 parser = argparse.ArgumentParser(
     description='AsciiMNAC, a terminal-enabled Meta Noughts and Crosses.')
 
-parser.add_argument('moves', nargs='*',
-                    help='(Space-separated) string of numerical moves to play.')
 parser.add_argument('-m', '--middlestart', dest='middleStart', action='store_false',
                     help='Allow noughts to start in the middle. (Slightly less balanced.)')
 parser.add_argument('-c', '--colors', dest='showColors', action='store_true',
-                    help='Display UNIX terminal colors. Still in development.')
+                    help='Display UNIX terminal colors.')
 
 if __name__ == '__main__':
-    n = parser.parse_args()
-    self = AsciiMNAC(noMiddleStart=n.middleStart)
-    self.loop(showColors=n.showColors)
+    args = parser.parse_args()
+    self = AsciiMNAC(noMiddleStart=args.middleStart)
+    self.loop(showColors=args.showColors)
