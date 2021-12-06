@@ -38,7 +38,7 @@ def takenStatus(grid):
         return 0
 
 
-numpad = [0, 7, 8, 9, 4, 5, 6, 1, 2, 3].index  # or __getindex__, I'm easy
+numpad = [0, 7, 8, 9, 4, 5, 6, 1, 2, 3].index
 
 DIRECTIONS = [
     ('nw', 'northwest',  'tl', 'topleft'),
@@ -119,6 +119,7 @@ class MNAC:
     def check(self):
         self.gridStatus = [takenStatus(g) for g in self.grids]
         self.winner = takenStatus(self.gridStatus)
+        # TODO: detect automatic win or draw
 
     def play(self, index):
         '''Play with index 1 through 9.'''
