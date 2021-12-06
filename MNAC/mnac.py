@@ -93,8 +93,8 @@ class MNAC:
     # Grid to play in.
     grid = None
 
-    def __init__(self, startGrid=None, noMiddleStart=False):
-        self.noMiddleStart = noMiddleStart
+    def __init__(self, startGrid=None, middleStart=True):
+        self.middleStart = middleStart
 
         self.lastPlacedGrid = None
         self.lastPlacedCell = None
@@ -139,7 +139,7 @@ class MNAC:
         '''Returns list of 1-9 that are playable.'''
         if self.state == 'begin':
             possible = list(range(1, 10))
-            if self.noMiddleStart:
+            if not self.middleStart:
                 possible.remove(5)
             return possible
         else:
@@ -149,7 +149,7 @@ class MNAC:
 
     def _play(self, index):
         if self.state == 'begin':
-            if self.noMiddleStart and index == 4:
+            if index == 4 and not self.middleStart:
                 raise MoveError(1)  # House rules
             self.grid = index
             self.state = 'inner'
@@ -247,4 +247,4 @@ def _test(n=1000, **args):
 
 if __name__ == '__main__':
     results = _test(50000)
-    results = _test(50000, noMiddleStart=True)
+    results = _test(50000, middleStart=False)

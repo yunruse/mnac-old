@@ -208,13 +208,13 @@ RENDER_PATH = '%smnac_{}.%s' % (
 class DiscordMNAC(mnac.MNAC):
     '''Handles serialisation, user confusing and message sending'''
 
-    def __init__(self, channel, noughts, crosses, noMiddleStart=False):
+    def __init__(self, channel, noughts, crosses, middleStart=True):
         self.timeStarted = time.time()
         self.channel = channel
         self.noughts = noughts
         self.crosses = crosses
         self.render = render.ImageRender(self, CONFIG['render_file_size'])
-        mnac.MNAC.__init__(self, noMiddleStart=noMiddleStart)
+        mnac.MNAC.__init__(self, middleStart=middleStart)
 
     def __repr__(self):
         return '<Discord MNAC ({}, {})>'.format(self.noughts, self.crosses)
@@ -286,7 +286,7 @@ class DiscordMNAC(mnac.MNAC):
     # Serialisation to dict (Discord items store as IDs)
 
     _NoneSerial = 'lastPlacedGrid lastPlacedCell'.split()
-    _directSerial = 'noMiddleStart player grid grids state'.split()
+    _directSerial = 'middleStart player grid grids state'.split()
     _idSerial = 'noughts crosses'.split()
 
     @classmethod
@@ -433,18 +433,18 @@ async def on_message(message):
     elif command == 'start':
         # Lobbies can be held but also skipped, so we get arguments and THEN apply them
         noughts = None
-        noMiddleStart = 'allowMiddle' not in args
+        middleStart = 'allowMiddle' in args
 
         isSolo = chan.is_private or ('practice' in args or 'solo' in args)
         if game is None and isSolo:
             noughts = user
         elif mode == 'lobby':
             noughts = game.get('noughts')
-            noMiddleStart = game.get('noMiddleStart', True)
+            middleStart = game.get('middleStart', True)
 
         if noughts:
             game = DiscordMNAC(message.channel, noughts,
-                               user, noMiddleStart=noMiddleStart)
+                               user, middleStart=middleStart)
             set_game(game)
             await r('start_game_started', noughts=mention(noughts))
             await game.show()
@@ -459,7 +459,7 @@ async def on_message(message):
         if game is None:
             # start lobby
             lobby = {'kind': 'lobby', 'noughts': user,
-                     'time_started': now, 'noMiddleStart': noMiddleStart}
+                     'time_started': now, 'middleStart': middleStart}
             set_game(lobby)
             await r('start_lobby_open', time_left=CONFIG['max_lobby_time'])
 

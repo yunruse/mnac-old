@@ -209,7 +209,7 @@ class UIMNAC(tk.Tk):
         self.showHelp = False
         self.error = ''
 
-        self.game = mnac.MNAC(noMiddleStart=True)
+        self.game = mnac.MNAC(middleStart=False)
         self.redraw()
 
     keyboardMayPlay = property(lambda s: not s.showHelp and (

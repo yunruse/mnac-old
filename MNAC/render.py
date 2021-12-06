@@ -131,7 +131,7 @@ class Render:
                         color = theme['gray']['light']
 
                 # keyboard selector for what grid to send / be in
-                elif not (game.noMiddleStart and game.state == 'begin' and g == 4):
+                elif not (not game.middleStart and game.state == 'begin' and g == 4):
                     color = theme['tele']['main']
 
                 if color:

@@ -42,6 +42,10 @@ NORMAL = colourify()
 
 
 class AsciiMNAC(mnac.MNAC):
+    def __init__(self, args):
+        self.args = args
+        super().__init__(middleStart=args.middleStart)
+
     def _grid(self, index, c=False):
         normal = NORMAL if c else ''
         noughts = NOUGHTS if c else ''
@@ -139,10 +143,10 @@ class AsciiMNAC(mnac.MNAC):
 parser = argparse.ArgumentParser(
     description='AsciiMNAC, a terminal-enabled Meta Noughts and Crosses.')
 
-parser.add_argument('-m', '--middlestart', dest='middleStart', action='store_false',
+parser.add_argument('-m', '--middleStart', dest='middleStart', action='store_true',
                     help='Allow noughts to start in the middle. (Slightly less balanced.)')
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    self = AsciiMNAC(noMiddleStart=args.middleStart)
+    self = AsciiMNAC(args)
     self.loop()
