@@ -56,15 +56,15 @@ class AsciiMNAC(mnac.MNAC):
             {1: (noughts + 'x'), 2: (crosses + 'o')}.get(cell) or (normal + '.')
             for n, cell in enumerate(self.grids[index])]
         selector = (
-            '   ' if self.noMiddleStart and self.state == 'begin' and index == 4 else
+            '   ' if self.state == 'begin' and index == 4 and not self.middleStart else
             normal + ('[{}]' if self.grid == index else ' {} ').format(mnac.numpad(index + 1)))
         return [''.join(symbols[0:3]), ''.join(symbols[3:6]), ''.join(symbols[6:9]), selector]
 
-    def __repr__(self, showColors=False):
+    def __repr__(self):
         rows = []
         for row in range(3):
             # transpose
-            chars = zip(*(self._grid(row * 3 + col, showColors)
+            chars = zip(*(self._grid(row * 3 + col)
                         for col in range(3)))
             rows.append('\n'.join(map(' '.join, chars)))
 
@@ -82,7 +82,7 @@ class AsciiMNAC(mnac.MNAC):
         else:
             return 'Send your opponent to'
 
-    def _loop(self, showColors=False):
+    def _loop(self):
         self._last_error = ''
         if os.name == 'nt':
             os.system('title Meta Noughts and Crosses')
@@ -91,7 +91,7 @@ class AsciiMNAC(mnac.MNAC):
             os.system('cls' if os.name == 'nt' else 'clear')
 
             print('{}Meta Noughts and Crosses\n\n{}\n'.format(
-                INFO, self.__repr__(showColors)))
+                INFO, repr(self)))
             if self._last_error:
                 print('{}[ {} ]{}'.format(
                     ERROR, self._last_error, NORMAL))
@@ -129,9 +129,9 @@ class AsciiMNAC(mnac.MNAC):
                 continue
             error = ''
 
-    def loop(self, showColors=False):
+    def loop(self):
         try:
-            self._loop(showColors=showColors)
+            self._loop()
         except KeyboardInterrupt:
             sys.exit(0)
 
@@ -141,10 +141,8 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-m', '--middlestart', dest='middleStart', action='store_false',
                     help='Allow noughts to start in the middle. (Slightly less balanced.)')
-parser.add_argument('-c', '--colors', dest='showColors', action='store_true',
-                    help='Display UNIX terminal colors.')
 
 if __name__ == '__main__':
     args = parser.parse_args()
     self = AsciiMNAC(noMiddleStart=args.middleStart)
-    self.loop(showColors=args.showColors)
+    self.loop()
