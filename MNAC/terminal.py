@@ -38,6 +38,7 @@ NOUGHTS = colourify('cyan')
 CROSSES = colourify('red')
 INFO = colourify('green')
 ERROR = colourify('red')
+TAKEN = colourify('gray')
 NORMAL = colourify()
 
 
@@ -47,19 +48,27 @@ class AsciiMNAC(mnac.MNAC):
         super().__init__(middleStart=args.middleStart)
 
     def _grid(self, index, colors=True):
-        normal = NORMAL if colors else ''
-        noughts = NOUGHTS if colors else ''
-        crosses = CROSSES if colors else ''
-        
+        normal = NORMAL
+        noughts = NOUGHTS
+        crosses = CROSSES
+
         taken = self.gridStatus[index]
-        if taken == 1:
-            return [noughts + '/-\\', '| |', '\\-/']
+        print(taken, colors)
+        if not colors:
+            normal = noughts = crosses = ''
+        elif taken == 1:
+            normal = noughts = crosses = NOUGHTS
         elif taken == 2:
-            return [crosses + '\\ /', ' x ', '/ \\']
+            normal = noughts = crosses = CROSSES
+        elif taken == 3:
+            normal = noughts = crosses = TAKEN
 
         symbols = [
-            {1: (noughts + 'x'), 2: (crosses + 'o')}.get(cell) or (normal + '.')
-            for n, cell in enumerate(self.grids[index])]
+            noughts + 'x' if cell == 1 else
+            crosses + 'o' if cell == 2 else
+            ' ' if taken in (1, 2) else
+            normal + '.'
+            for cell in self.grids[index]]
         selector = (
             '   ' if self.state == 'begin' and index == 4 and not self.middleStart else
             normal + ('[{}]' if self.grid == index else ' {} ').format(mnac.numpad(index + 1)))
