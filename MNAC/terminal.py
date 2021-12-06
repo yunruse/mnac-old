@@ -94,7 +94,7 @@ class AsciiMNAC(mnac.MNAC):
                 INFO, self.__repr__(showColors)))
             if self._last_error:
                 print('{}[ {} ]{}'.format(
-                    ERROR, mnac.ERRORS[self._last_error], colourify()))
+                    ERROR, self._last_error, NORMAL))
             else:
                 print()
 
@@ -125,7 +125,7 @@ class AsciiMNAC(mnac.MNAC):
             try:
                 self.play(index + 1)
             except mnac.MoveError as e:
-                self._last_error = e.args[0]
+                self._last_error = str(e)
                 continue
             error = ''
 
