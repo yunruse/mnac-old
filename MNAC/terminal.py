@@ -46,10 +46,11 @@ class AsciiMNAC(mnac.MNAC):
         self.args = args
         super().__init__(middleStart=args.middleStart)
 
-    def _grid(self, index, c=False):
-        normal = NORMAL if c else ''
-        noughts = NOUGHTS if c else ''
-        crosses = CROSSES if c else ''
+    def _grid(self, index, colors=True):
+        normal = NORMAL if colors else ''
+        noughts = NOUGHTS if colors else ''
+        crosses = CROSSES if colors else ''
+        
         taken = self.gridStatus[index]
         if taken == 1:
             return [noughts + '/-\\', '| |', '\\-/']
