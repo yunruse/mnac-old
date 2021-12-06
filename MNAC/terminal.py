@@ -90,13 +90,15 @@ class AsciiMNAC(mnac.MNAC):
         while True:
             os.system('cls' if os.name == 'nt' else 'clear')
 
-            # printing with colour
+            print('{}Meta Noughts and Crosses\n\n{}\n'.format(
+                INFO, self.__repr__(showColors)))
+            if self._last_error:
+                print('{}[ {} ]{}'.format(
+                    ERROR, mnac.ERRORS[self._last_error], colourify()))
+            else:
+                print()
 
-            error = '{}[ {} ]{}'.format(
-                ERROR, mnac.ERRORS[self._last_error], colourify()) if self._last_error else ''
             self._last_error = ''
-            print('{}Meta Noughts and Crosses\n\n{}\n\n{}'.format(
-                INFO, self.__repr__(showColors), error))
 
             if self.winner:
                 print('GAME OVER! {}!'.format(
