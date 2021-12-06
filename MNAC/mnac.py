@@ -42,8 +42,8 @@ numpad = [0, 7, 8, 9, 4, 5, 6, 1, 2, 3].index  # or __getindex__, I'm easy
 
 DIRECTIONS = [
     ('nw', 'northwest',  'tl', 'topleft'),
-    ('ne', 'northeast',  'tr', 'topright'),
     ('n',  'north',      't',  'top'),
+    ('ne', 'northeast',  'tr', 'topright'),
     ('w',  'west',       'l',  'left'),
     ('c',  'centre',     'm',  'middle'),
     ('e',  'east',       'r',  'right'),
