@@ -125,6 +125,8 @@ class AsciiMNAC(mnac.MNAC):
                     mnac.DIRECTIONS[self.grid][1]) if self.grid is not None else '',
                 self.action))
 
+            # TODO: handle eg '12' if and only if a teleporter move can be played?
+
             inp = input(prompt).lower().strip().replace(
                 ' ', '').replace('-', '')
             if 'exit' in inp or inp == 'q':
