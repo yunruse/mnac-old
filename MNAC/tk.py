@@ -6,6 +6,7 @@ Requires Python >3.6, tkinter and mnac.
 1.1: keyboard indicators / keyboard controls are like numpad
 1.2: new status menu, controls, help menu
 1.3: better mouse handling
+1.4: UI tweaks and touchups
 '''
 
 import random
@@ -16,9 +17,9 @@ import numpy as np
 import mnac
 import render
 
-TITLE = 'TkMNAC v1.3dev / yunru.se'
+__version__ = '1.4'
 
-
+TITLE = f'TkMNAC v{__version__} / yunru.se'
 
 class CanvasRender(render.Render):
     '''Tkinter Canvas-based renderer.'''
