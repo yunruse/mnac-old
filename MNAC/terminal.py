@@ -47,30 +47,32 @@ class AsciiMNAC(mnac.MNAC):
         self.args = args
         super().__init__(middleStart=args.middleStart)
 
-    def _grid(self, index, colors=True):
+    def _grid(self, grid, colors=True):
         normal = NORMAL
+        tele = INFO
         noughts = NOUGHTS
         crosses = CROSSES
 
-        taken = self.gridStatus[index]
+        taken = self.gridStatus[grid]
         if not colors:
-            normal = noughts = crosses = ''
+            normal = noughts = crosses = tele = ''
         elif taken == 1:
-            normal = noughts = crosses = NOUGHTS
+            normal = noughts = crosses = tele = NOUGHTS
         elif taken == 2:
-            normal = noughts = crosses = CROSSES
+            normal = noughts = crosses = tele = CROSSES
         elif taken == 3:
-            normal = noughts = crosses = TAKEN
+            normal = noughts = crosses = tele = TAKEN
 
         symbols = [
             noughts + 'x' if cell == 1 else
             crosses + 'o' if cell == 2 else
             ' ' if taken in (1, 2) else
+            tele + '.' if c == grid or self.gridStatus[c] != 0 else
             normal + '.'
-            for cell in self.grids[index]]
+            for c, cell in enumerate(self.grids[grid])]
         selector = (
-            '   ' if self.state == 'begin' and index == 4 and not self.middleStart else
-            normal + ('[{}]' if self.grid == index else ' {} ').format(mnac.numpad(index + 1)))
+            '   ' if self.state == 'begin' and grid == 4 and not self.middleStart else
+            normal + ('[{}]' if self.grid == grid else ' {} ').format(mnac.numpad(grid + 1)))
         return [''.join(symbols[0:3]), ''.join(symbols[3:6]), ''.join(symbols[6:9]), selector]
 
     def __repr__(self):
