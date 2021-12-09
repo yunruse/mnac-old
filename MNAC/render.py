@@ -146,16 +146,16 @@ class Render:
                         fill=color)
 
         # corners, with x, y and reversing of corner coords
-        for x, y, xr, yr in (
-            (0, 0, 1,  1), (1, 0, -1,  1),
-                (0, 1, 1, -1), (1, 1, -1, -1)):
-            rel = cell * 3 * np.array((x, y))
-            size = cell * self.ROUNDING * np.array((xr, yr))
-            for i in range(9):
-                gxy = np.array((i % 3, i // 3))
-                coord = gxy * cell * (3 + self.SEPARATION) + rel
-                shape = coord + CORNER * size
-                self.polygon(shape, fill=self.background())
+        # for x, y, xr, yr in (
+        #     (0, 0, 1,  1), (1, 0, -1,  1),
+        #         (0, 1, 1, -1), (1, 1, -1, -1)):
+        #     rel = cell * 3 * np.array((x, y))
+        #     size = cell * self.ROUNDING * np.array((xr, yr))
+        #     for i in range(9):
+        #         gxy = np.array((i % 3, i // 3))
+        #         coord = gxy * cell * (3 + self.SEPARATION) + rel
+        #         shape = coord + CORNER * size
+        #         self.polygon(shape, fill=self.background())
 
         return self.drawn()
 
