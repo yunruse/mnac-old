@@ -1,4 +1,5 @@
-'''Tkinter implementation of Meta Noughts and Crosses.
+'''
+Tkinter implementation of Meta Noughts and Crosses.
 Requires Python >3.6, tkinter and mnac.
 
 1.0: release

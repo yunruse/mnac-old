@@ -1,3 +1,7 @@
+'''
+PIL-based renderer for a given MNAC scene.
+'''
+
 from ast import literal_eval
 import os
 import re
@@ -36,6 +40,7 @@ CROSS = np.array([
 
 
 class Render:
+    '''Generic render engine.'''
     def __init__(self, game, size=450, theme='dark'):
         if not isinstance(game, mnac.MNAC):
             raise TypeError('Game must be MNAC or subclass')
