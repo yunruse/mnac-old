@@ -70,9 +70,18 @@ class AsciiMNAC(mnac.MNAC):
             tele + '.' if c == grid or self.gridStatus[c] != 0 else
             normal + '.'
             for c, cell in enumerate(self.grids[grid])]
-        selector = (
-            '   ' if self.state == 'begin' and grid == 4 and not self.middleStart else
-            normal + ('[{}]' if self.grid == grid else ' {} ').format(mnac.numpad(grid + 1)))
+
+        if self.state == 'begin' and grid == 4 and not self.middleStart:
+            selector = '   '
+        else:
+            n = mnac.numpad(grid+1)
+            if self.grid == grid:
+                col = noughts if self.player == 1 else crosses
+                selector = f'{col}[{n}]'
+            elif self.state == 'outer':
+                selector = f'{tele} {n} '
+            else:
+                selector = f'{normal} {n} '
         return [''.join(symbols[0:3]), ''.join(symbols[3:6]), ''.join(symbols[6:9]), selector]
 
     def __repr__(self):
