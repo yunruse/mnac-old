@@ -5,7 +5,7 @@ Requires Python >3.6, tkinter and mnac.
 1.0: release
 1.1: keyboard indicators / keyboard controls are like numpad
 1.2: new status menu, controls, help menu
-1.3: automatic keyboard/mouse selector, better mouse handling
+1.3: better mouse handling
 '''
 
 import random
@@ -18,16 +18,6 @@ import render
 
 TITLE = 'TkMNAC v1.3dev / yunru.se'
 
-MOUSE = np.array([
-    (8,  0), (8, 28), (14, 22), (18, 32),
-    (23, 30), (19, 19), (27, 20), (8,  0)
-]) / 32
-KEYBOARD_OUTER = np.array([
-    (4, 2), (28, 2), (30, 4), (30, 28), (28, 30), (4, 30), (2, 28), (2, 4), (4, 2),
-]) / 32
-KEYBOARD_INNER = np.array([
-    (7, 5), (25, 5), (27, 7), (27, 25), (25, 27), (7, 27), (5, 25), (5, 7), (7, 5),
-]) / 32
 
 
 class CanvasRender(render.Render):
@@ -106,15 +96,6 @@ class CanvasRender(render.Render):
                 (header_height - glyph_size) / 2 + 2)).flatten(),
             width=0, fill=fill, tags='status')
 
-        if self.app.mouseMayPlay:
-            draw_glyph(-2, MOUSE, titlefill)
-
-        if self.app.keyboardMayPlay:
-            draw_glyph(-1, KEYBOARD_OUTER, titlefill)
-            draw_glyph(-1, KEYBOARD_INNER, self.background())
-            header(self.topleft[0] + self.size -
-                   glyph_size / 2, anchor='center', text='A')
-
         render.Render.draw(self)
 
         # draw beginning help in middle cell
@@ -141,8 +122,6 @@ class CanvasRender(render.Render):
                 '',
                 'CONTROLS:',
                 'Control-R: Restart the game',
-                'Control-P: Change which players are controlled by',
-                'keyboard and mouse (indicated by the top right icons)',
                 'Keys 1-9 and mouse/touch:  Play in cell / grid'
             ), start=1):
                 header(w/2, self.topleft[1] + i * 1.5 *
@@ -178,9 +157,6 @@ class UIMNAC(tk.Tk):
     def __init__(self, **kwargs):
         '''Initialise frame. Set players to None or a number.'''
 
-        # None (both input kinds) or 1 or 2
-        self._keyboardPlayer = kwargs.get('keyboardPlayer', None)
-
         tk.Tk.__init__(self)
         self.title(TITLE)
         self.minsize(400, 424)
@@ -195,13 +171,12 @@ class UIMNAC(tk.Tk):
         self.render = CanvasRender(self)
 
         self.bind_all('<Configure>', self.redraw)
-        self.bind_all('<Control-p>', self.changePlayer)
         self.bind_all('<Control-r>', self.restart)
         self.bind_all('<Tab>', self.toggleHelp)
         self.bind_all('<Escape>', self.clearError)
         self.canvas.bind('<Button-1>', self.onClick)
 
-        def callbacker(i): return lambda *event: self.onKey(i)
+        def callbacker(i): return lambda *event: self.play(mnac.numpad(i))
         for i in range(1, 10):
             self.bind_all(str(i), callbacker(i))
         self.restart()
@@ -211,23 +186,6 @@ class UIMNAC(tk.Tk):
         self.error = ''
 
         self.game = mnac.MNAC(middleStart=False)
-        self.redraw()
-
-    keyboardMayPlay = property(lambda s: not s.showHelp and (
-        s._keyboardPlayer is None or s._keyboardPlayer == s.game.player))
-
-    mouseMayPlay = property(lambda s: not s.showHelp and (
-        s._keyboardPlayer is None or s._keyboardPlayer != s.game.player))
-
-    def changePlayer(self, *event):
-        '''Called on ctrl-P or clicking the player icon.'''
-        k = self._keyboardPlayer
-        if k is None:
-            self._keyboardPlayer = 1
-        elif k == 1:
-            self._keyboardPlayer = 2
-        else:
-            self._keyboardPlayer = None
         self.redraw()
 
     def clearError(self, *event):
@@ -251,6 +209,9 @@ class UIMNAC(tk.Tk):
         self.render.draw()
 
     def onClick(self, event):
+        if self.game.winner:
+            return
+        
         w, h, s, tl, header_height = self.coordinate()
         x = (event.x - tl[0]) * 9 / s
 
@@ -258,8 +219,6 @@ class UIMNAC(tk.Tk):
             # status bar click
             if x < 2 or self.showHelp:
                 self.toggleHelp()
-            elif x > 8:
-                self.changePlayer()
             else:
                 self.clearError()
 
@@ -273,28 +232,18 @@ class UIMNAC(tk.Tk):
         else:
             return
 
-        if self.game.winner:
-            return self.restart()
-
-        if self.mouseMayPlay:
-            if self.game.state in ('outer', 'begin'):
+        if self.game.state in ('outer', 'begin'):
+            self.play(grid)
+        elif self.game.state == 'inner':
+            if grid == (self.game.grid + 1):
+                self.play(cell)
+            else:
                 self.play(grid)
-            elif self.game.state == 'inner':
-                if grid == (self.game.grid + 1):
-                    self.play(cell)
-                else:
-                    self.play(grid)
-
-    def onKey(self, index):
-        if self.game.winner:
-            return self.restart()
-
-        if self.keyboardMayPlay:
-            self.play(mnac.numpad(index))
 
     def play(self, index):
         if self.game.winner:
-            return self.restart()
+            return
+        
         self.error = ''
         try:
             self.game.play(index)
