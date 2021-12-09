@@ -40,17 +40,27 @@ def takenStatus(grid):
 
 numpad = [0, 7, 8, 9, 4, 5, 6, 1, 2, 3].index
 
-DIRECTIONS = [
-    ('nw', 'northwest',  'tl', 'topleft'),
-    ('n',  'north',      't',  'top'),
-    ('ne', 'northeast',  'tr', 'topright'),
-    ('w',  'west',       'l',  'left'),
-    ('c',  'centre',     'm',  'middle'),
-    ('e',  'east',       'r',  'right'),
-    ('sw', 'southwest',  'bl', 'bottomleft'),
-    ('s',  'south',      'b',  'bottom'),
-    ('se', 'southeast',  'br', 'bottomright')
-]
+
+def _directions():
+    U = '\x1b[a'
+    D = '\x1b[b'
+    R = '\x1b[c'
+    L = '\x1b[d'
+
+    return [
+        ('nw', 'northwest',  'tl', 'topleft',     U+L, L+U),
+        ('n',  'north',      't',  'top',         U),
+        ('ne', 'northeast',  'tr', 'topright',    U+R, R+U),
+        ('w',  'west',       'l',  'left',        L),
+        ('c',  'centre',     'm',  'middle',      U+D, D+U, L+R, R+L),
+        ('e',  'east',       'r',  'right',       R),
+        ('sw', 'southwest',  'bl', 'bottomleft',  D+L, L+D),
+        ('s',  'south',      'b',  'bottom',      D),
+        ('se', 'southeast',  'br', 'bottomright', D+R, R+D)
+    ]
+
+
+DIRECTIONS = _directions()
 
 
 def getIndex(text):
