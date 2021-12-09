@@ -10,6 +10,7 @@ Requires Python >3.6, tkinter and mnac.
 '''
 
 import random
+import os
 
 import tkinter as tk
 import numpy as np
@@ -148,7 +149,11 @@ class CanvasRender(render.Render):
 
     def text(self, coords, isLarge, text, size, fill):
         coords += self.topleft
-        fiddle = (1/9, -7/6) if isLarge else (-2/9, -2/3)
+        # this is arbitrary and needs a lot more playtesting :(
+        if os.name == 'posix':
+            fiddle = (2/9, -3/9) if isLarge else (-2/9, -4/9)
+        else:
+            fiddle = (1/9, -7/6) if isLarge else (-2/9, -2/3)
         coords += np.array(fiddle) * self.size / (9 + 2 * self.SEPARATION)
         self.canvas.create_text(
             *coords, text=text, fill=fill, font=(self.font, size), anchor='nw', tags='play')
