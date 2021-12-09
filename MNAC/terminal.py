@@ -53,7 +53,6 @@ class AsciiMNAC(mnac.MNAC):
         crosses = CROSSES
 
         taken = self.gridStatus[index]
-        print(taken, colors)
         if not colors:
             normal = noughts = crosses = ''
         elif taken == 1:
