@@ -104,7 +104,7 @@ class Render:
 
                     elif game.grid == g and game.state == 'inner':
                         # keyboard selector for cell
-                        canTeleport = (c == g or game.gridStatus[g] != 0)
+                        canTeleport = (c == g or game.gridStatus[c] != 0)
                         textcol = theme['tele']['main'] if canTeleport else theme['gray']['dark']
                         self.text(
                             celltl + cell/2, isLarge=False, fill=textcol,
